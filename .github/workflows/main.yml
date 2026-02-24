@@ -18,18 +18,28 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Moverse a la carpeta correcta y dar permisos
+      - name: Ver estructura del repositorio
         run: |
-          cd CodeAssist-main/CodeAssist-main
-          chmod +x gradlew
+          echo "=== CONTENIDO RAÍZ ==="
+          ls -la
+          echo "=== BUSCANDO GRADLEW ==="
+          find . -name "gradlew" -type f
 
       - name: Compilar con Gradle
         run: |
-          cd CodeAssist-main/CodeAssist-main
+          # Buscar gradlew y usarlo
+          GRADLEW_PATH=$(find . -name "gradlew" -type f | head -n 1)
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "ERROR: No se encontró gradlew"
+            exit 1
+          fi
+          echo "Found gradlew at: $GRADLEW_PATH"
+          cd $(dirname $GRADLEW_PATH)
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: CodeAssist-main/CodeAssist-main/app/build/outputs/apk/debug/app-debug.apk
+          path: $(find . -path "*/app/build/outputs/apk/debug/app-debug.apk" | head -n 1)
