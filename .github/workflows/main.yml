@@ -26,22 +26,22 @@ jobs:
           echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
           chmod +x "$GRADLEW_PATH"
 
-      - name: Compilación Forzada de App
+      - name: Compilación Total (Fuerza Bruta)
         run: |
           cd ${{ env.PROJECT_ROOT }}
-          ./gradlew :app:assembleDebug --stacktrace --continue || echo "Finalizado con advertencias"
+          # Ejecutamos 'assemble' a secas para que genere CUALQUIER variante de APK disponible
+          ./gradlew assemble --stacktrace --continue || echo "Finalizado con advertencias"
 
-      - name: Preparar Artefactos (Mover APK)
+      - name: Inspección de Archivos Generados
         run: |
+          echo "=== Buscando todos los archivos .apk en el sistema ==="
+          find . -name "*.apk"
           mkdir -p outputs
-          # Busca cualquier APK generado y lo mueve a la carpeta 'outputs'
           find . -name "*.apk" -type f -exec cp {} ./outputs/ \;
-          echo "Contenido de la carpeta outputs:"
-          ls ./outputs
 
       - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
-          name: CodeAssist-Custom-APK
-          path: outputs/*.apk
+          name: CodeAssist-Cualquier-APK
+          path: outputs/
         if: always()
