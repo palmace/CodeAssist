@@ -2,7 +2,7 @@ name: Compilar APK Debug
 
 on:
   push:
-    branches: [ "main" ] # Cambiado de "master" a "main"
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -18,31 +18,20 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Buscar y ejecutar Gradle
+      - name: Configurar variables de entorno para Java 17
         run: |
-          echo "=== Buscando archivo gradlew ==="
-          GRADLEW_PATH=$(find $GITHUB_WORKSPACE -name "gradlew" -type f -print -quit)
-          
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "❌ Error: No se encontró el archivo 'gradlew'."
-            echo "Contenido del directorio de trabajo:"
-            ls -la $GITHUB_WORKSPACE
-            echo "Buscando en todo el repositorio:"
-            find $GITHUB_WORKSPACE -maxdepth 4 -type f -name "gradlew" -exec dirname {} \;
-            exit 1
-          fi
-          
-          echo "✅ gradlew encontrado en: $GRADLEW_PATH"
-          GRADLEW_DIR=$(dirname "$GRADLEW_PATH")
-          cd "$GRADLEW_DIR"
-          echo "Directorio de trabajo cambiado a: $(pwd)"
-          chmod +x gradlew
-          echo "Ejecutando ./gradlew assembleDebug..."
-          ./gradlew assembleDebug
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Subir APK (si se generó)
+      - name: Buscar gradlew y compilar
+        run: |
+          cd CodeAssist-main
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: ${{ github.workspace }}/**/app/build/outputs/apk/debug/app-debug.apk
+          path: CodeAssist-main/app/build/outputs/apk/debug/app-debug.apk
         continue-on-error: true
