@@ -18,22 +18,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Ver estructura del repositorio
+      - name: Depurar - Ver estructura
         run: |
-          echo "=== CONTENIDO RAÍZ ==="
+          echo "=== ARCHIVOS EN RAÍZ ==="
           ls -la
-          echo "=== BUSCANDO GRADLEW ==="
+          echo "=== BUSCANDO gradlew ==="
           find . -name "gradlew" -type f
 
-      - name: Compilar con Gradle
+      - name: Dar permisos y compilar
         run: |
-          # Buscar gradlew y usarlo
           GRADLEW_PATH=$(find . -name "gradlew" -type f | head -n 1)
           if [ -z "$GRADLEW_PATH" ]; then
-            echo "ERROR: No se encontró gradlew"
+            echo "::error::NO SE ENCONTRÓ GRADLEW"
             exit 1
           fi
-          echo "Found gradlew at: $GRADLEW_PATH"
+          echo "✅ gradlew encontrado en: $GRADLEW_PATH"
           cd $(dirname $GRADLEW_PATH)
           chmod +x gradlew
           ./gradlew assembleDebug
