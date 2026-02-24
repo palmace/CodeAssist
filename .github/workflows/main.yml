@@ -26,22 +26,23 @@ jobs:
           echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
           chmod +x "$GRADLEW_PATH"
 
-      - name: Compilación Total (Fuerza Bruta)
+      - name: Compilación Directa
         run: |
           cd ${{ env.PROJECT_ROOT }}
-          # Ejecutamos 'assemble' a secas para que genere CUALQUIER variante de APK disponible
-          ./gradlew assemble --stacktrace --continue || echo "Finalizado con advertencias"
+          # Usamos 'build' en lugar de 'assemble' para forzar la creación de todos los outputs
+          ./gradlew :app:build -x test --continue || echo "Construcción finalizada con avisos"
 
-      - name: Inspección de Archivos Generados
+      - name: Localización Exhaustiva
         run: |
-          echo "=== Buscando todos los archivos .apk en el sistema ==="
-          find . -name "*.apk"
-          mkdir -p outputs
-          find . -name "*.apk" -type f -exec cp {} ./outputs/ \;
+          echo "=== LISTADO DE TODOS LOS ARCHIVOS GENERADOS ==="
+          # Esto nos mostrará en el log si existe algún archivo .apk o .aar
+          find . -name "*.apk" -o -name "*.aar"
+          mkdir -p final_outputs
+          find . -name "*.apk" -type f -exec cp {} ./final_outputs/ \;
 
-      - name: Subir APK
+      - name: Subir Resultados
         uses: actions/upload-artifact@v4
         with:
-          name: CodeAssist-Cualquier-APK
-          path: outputs/
+          name: CodeAssist-Debug-Package
+          path: final_outputs/
         if: always()
