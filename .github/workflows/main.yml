@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CI Debug
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout del código
         uses: actions/checkout@v4
 
       - name: Configurar JDK 17
@@ -17,17 +17,36 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
-      - name: Compilar
+      - name: Localizar Proyecto y Permisos
         run: |
-          # Si tu código está dentro de una carpeta, entra en ella. 
-          # Si está en la raíz, el comando cd fallará pero el resto seguirá.
-          cd CodeAssist-main || echo "No existe la carpeta, probando en raíz"
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
-          
+          # Buscar el gradlew en el repo
+          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "❌ No se encontró gradlew. Listando archivos para depurar:"
+            ls -R
+            exit 1
+          fi
+          PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
+          echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
+          chmod +x "$GRADLEW_PATH"
+          echo "✅ Proyecto encontrado en: $PROJECT_ROOT"
+
+      - name: Validar Sintaxis de Gradle
+        run: |
+          cd ${{ env.PROJECT_ROOT }}
+          # Esto detectará errores de comillas o corchetes en tus build.gradle
+          ./gradlew help --stacktrace || { echo "❌ Error de sintaxis en build.gradle o settings.gradle"; exit 1; }
+
+      - name: Compilar APK Debug
+        run: |
+          cd ${{ env.PROJECT_ROOT }}
+          ./gradlew assembleDebug --stacktrace --info
+
       - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: CodeAssist-Debug
           path: "**/build/outputs/apk/debug/*.apk"
+        if: success()
