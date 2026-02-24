@@ -3,8 +3,6 @@ name: Android CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -20,23 +18,35 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Localizar Proyecto (Depuración)
+      id: locate
+      run: |
+        echo "=== DIRECTORIO ACTUAL ==="
+        pwd
+        echo "=== LISTADO COMPLETO (primeros niveles) ==="
+        ls -la
+        echo "=== BUSCANDO gradlew ==="
+        GRADLEW_PATH=$(find . -name "gradlew" -type f | head -n 1)
+        if [ -z "$GRADLEW_PATH" ]; then
+          echo "❌ No se encontró gradlew"
+          echo "Búsqueda recursiva (puede ser larga):"
+          find . -type f -name "gradlew" 2>/dev/null || echo "No encontrado"
+          exit 1
+        fi
+        PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
+        echo "✅ gradlew encontrado en: $GRADLEW_PATH"
+        echo "✅ Carpeta raíz del proyecto: $PROJECT_ROOT"
+        echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
+
     - name: Configurar SDK de Android
       uses: android-actions/setup-android@v3
 
-    - name: Aceptar licencias del SDK
-      run: |
-        yes | sdkmanager --licenses || true
-        sdkmanager --update
+    - name: Aceptar licencias
+      run: yes | sdkmanager --licenses || true
 
-    - name: Verificar archivos (DEPURACIÓN)
+    - name: Compilar APK
       run: |
-        echo "=== ARCHIVOS EN RAÍZ ==="
-        ls -la
-        echo "=== ¿EXISTE gradlew? ==="
-        ls -la gradlew || echo "❌ gradlew no encontrado"
-
-    - name: Compilar directamente
-      run: |
+        cd ${{ env.PROJECT_ROOT }}
         chmod +x gradlew
         ./gradlew assembleDebug
 
@@ -44,4 +54,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: "**/app/build/outputs/apk/debug/app-debug.apk"
