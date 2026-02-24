@@ -15,7 +15,7 @@ jobs:
       - name: Configurar JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '11' # Cambiado de 17 a 11 para compatibilidad
+          java-version: '11'
           distribution: 'temurin'
           cache: 'gradle'
 
@@ -34,12 +34,20 @@ jobs:
       - name: Validar Sintaxis de Gradle
         run: |
           cd ${{ env.PROJECT_ROOT }}
-          ./gradlew help --stacktrace
+          ./gradlew help --quiet
 
       - name: Compilar APK Debug
         run: |
           cd ${{ env.PROJECT_ROOT }}
-          ./gradlew assembleDebug --stacktrace
+          # Ejecutamos la compilación y guardamos el log para analizar errores
+          ./gradlew assembleDebug --stacktrace > full_log.txt 2>&1 || {
+            echo "----------------------------------------------------"
+            echo "❌ ERROR DETECTADO EN EL CÓDIGO DE TUS BOTONES"
+            echo "----------------------------------------------------"
+            # Filtramos solo los errores reales (Java/Kotlin/XML)
+            grep -E "error:|e: |: /" full_log.txt | grep ".java:\|.kt:\|.xml:" | head -n 30
+            exit 1
+          }
 
       - name: Subir APK
         uses: actions/upload-artifact@v4
