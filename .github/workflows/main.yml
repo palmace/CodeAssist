@@ -1,14 +1,5 @@
     - name: Compilar APK Debug
       run: |
-        cd ${{ env.PROJECT_ROOT }}
-        # Ejecutamos con --stacktrace y redirigimos errores a un archivo
-        ./gradlew assembleDebug --stacktrace --info > log_compilacion.txt 2>&1 || touch FAILED
-        
-        if [ -f FAILED ]; then
-          echo "=== ❌ ERROR DETECTADO EN LA COMPILACIÓN ==="
-          # Buscamos las líneas que contienen 'error:' (que suelen ser de Java/Kotlin)
-          grep -iA 5 "error:" log_compilacion.txt || tail -n 100 log_compilacion.txt
-          exit 1
-        else
-          echo "=== ✅ COMPILACIÓN EXITOSA ==="
-        fi
+        cd CodeAssist-main
+        chmod +x gradlew
+        ./gradlew assembleDebug --stacktrace --info
