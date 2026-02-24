@@ -18,14 +18,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Dar permisos a gradlew
-        run: chmod +x gradlew
+      - name: Moverse a la carpeta correcta y dar permisos
+        run: |
+          cd CodeAssist-main/CodeAssist-main
+          chmod +x gradlew
 
       - name: Compilar con Gradle
-        run: ./gradlew assembleDebug
+        run: |
+          cd CodeAssist-main/CodeAssist-main
+          ./gradlew assembleDebug
 
-      - name: Subir APK (como artefacto)
+      - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: CodeAssist-main/CodeAssist-main/app/build/outputs/apk/debug/app-debug.apk
