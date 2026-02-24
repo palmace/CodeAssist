@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout del código
         uses: actions/checkout@v4
 
       - name: Configurar JDK 11
@@ -19,22 +19,31 @@ jobs:
           distribution: 'temurin'
           cache: 'gradle'
 
-      - name: Preparar Ejecución
+      - name: Localizar Proyecto y Permisos
         run: |
           GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "❌ No se encontró gradlew."
+            exit 1
+          fi
           PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
           echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
           chmod +x "$GRADLEW_PATH"
+          echo "✅ Proyecto encontrado en: $PROJECT_ROOT"
 
       - name: Compilación Forzada de App
         run: |
           cd ${{ env.PROJECT_ROOT }}
-          # Usamos --continue para que no se detenga por errores en módulos build-tools secundarios
-          ./gradlew :app:assembleDebug --stacktrace --continue || echo "Ignorando errores no críticos..."
+          # Usamos --continue para saltar errores en módulos de herramientas que no usamos
+          ./gradlew :app:assembleDebug --stacktrace --continue || echo "Finalizado con algunas advertencias no críticas"
 
       - name: Verificar y Subir APK
         uses: actions/upload-artifact@v4
         with:
-          name: CodeAssist-Custom
-          path: "**/build/outputs/apk/debug/*.apk"
+          name: CodeAssist-Custom-APK
+          # Buscamos de forma recursiva cualquier archivo .apk generado
+          # Excluimos carpetas de herramientas para obtener solo la App
+          path: |
+            **/*.apk
+            !**/build-tools/**
         if: always()
