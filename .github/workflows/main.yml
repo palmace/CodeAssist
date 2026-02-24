@@ -1,4 +1,4 @@
-name: Android CI (Debug Completo)
+name: Compilar APK (Configuración Completa)
 
 on:
   push:
@@ -9,39 +9,49 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Configurar JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
 
-    - name: Configurar SDK de Android
-      uses: android-actions/setup-android@v3
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Aceptar licencias del SDK
-      run: yes | sdkmanager --licenses || true
+      - name: Configurar SDK de Android
+        uses: android-actions/setup-android@v3
 
-    - name: Ir a la carpeta y depurar
-      run: |
-        cd CodeAssist-main
-        chmod +x gradlew
-        # Este comando mostrará el error completo
-        ./gradlew assembleDebug --stacktrace --info --no-daemon || true
-        # Buscar el archivo de error si existe
-        find . -name "*.log" -o -name "*.stacktrace" | xargs cat 2>/dev/null || echo "No logs encontrados"
+      - name: Aceptar licencias del SDK
+        run: yes | sdkmanager --licenses || true
 
-    - name: Subir logs de error (si existen)
-      uses: actions/upload-artifact@v4
-      with:
-        name: gradle-logs
-        path: "**/build/reports/**"
-      continue-on-error: true
+      - name: Instalar herramientas de build específicas
+        run: |
+          sdkmanager "platform-tools" "platforms;android-32" "build-tools;32.0.0"
+          sdkmanager --update
 
-    - name: Subir APK (si existe)
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: "**/app/build/outputs/apk/debug/app-debug.apk"
-      continue-on-error: true
+      - name: Establecer variables de entorno del SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
+
+      - name: Ir a la carpeta del código
+        run: cd CodeAssist-main
+
+      - name: Dar permisos a gradlew
+        run: chmod +x gradlew
+        working-directory: ./CodeAssist-main
+
+      - name: Limpiar compilaciones anteriores
+        run: ./gradlew clean
+        working-directory: ./CodeAssist-main
+
+      - name: Compilar con información detallada
+        run: ./gradlew assembleDebug --stacktrace
+        working-directory: ./CodeAssist-main
+
+      - name: Subir APK generado
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: CodeAssist-main/app/build/outputs/apk/debug/app-debug.apk
+        continue-on-error: true
