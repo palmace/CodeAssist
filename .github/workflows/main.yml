@@ -1,4 +1,4 @@
-name: Android CI (Debug)
+name: Android CI (Debug Completo)
 
 on:
   push:
@@ -20,35 +20,24 @@ jobs:
     - name: Configurar SDK de Android
       uses: android-actions/setup-android@v3
 
-    - name: DEPURACIÓN - Mostrar estructura completa
-      run: |
-        echo "=== ARCHIVOS EN RAÍZ ==="
-        ls -la
-        echo "=== SI EXISTE CodeAssist-main ==="
-        if [ -d "CodeAssist-main" ]; then
-          cd CodeAssist-main
-          echo "=== ARCHIVOS DENTRO DE CodeAssist-main ==="
-          ls -la
-          echo "=== CONTENIDO DE settings.gradle ==="
-          cat settings.gradle 2>/dev/null || echo "No existe settings.gradle"
-          echo "=== CONTENIDO DE build.gradle (raíz) ==="
-          cat build.gradle 2>/dev/null || echo "No existe build.gradle"
-          echo "=== CONTENIDO DE app/build.gradle ==="
-          cat app/build.gradle 2>/dev/null || echo "No existe app/build.gradle"
-        else
-          echo "❌ No se encontró CodeAssist-main"
-        fi
+    - name: Aceptar licencias del SDK
+      run: yes | sdkmanager --licenses || true
 
-    - name: Intentar compilar con más detalles
+    - name: Ir a la carpeta y depurar
       run: |
-        if [ -d "CodeAssist-main" ]; then
-          cd CodeAssist-main
-          chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace --info || true
-        else
-          echo "No se puede compilar"
-          exit 1
-        fi
+        cd CodeAssist-main
+        chmod +x gradlew
+        # Este comando mostrará el error completo
+        ./gradlew assembleDebug --stacktrace --info --no-daemon || true
+        # Buscar el archivo de error si existe
+        find . -name "*.log" -o -name "*.stacktrace" | xargs cat 2>/dev/null || echo "No logs encontrados"
+
+    - name: Subir logs de error (si existen)
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-logs
+        path: "**/build/reports/**"
+      continue-on-error: true
 
     - name: Subir APK (si existe)
       uses: actions/upload-artifact@v4
