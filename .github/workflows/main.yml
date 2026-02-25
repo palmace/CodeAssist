@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CI (Estructura Limpia)
 
 on:
   push:
@@ -19,14 +19,15 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Compilar con Build Scan
+      - name: Compilar APK
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --scan --stacktrace --no-daemon
+          # Aceptar términos de Build Scan si se usa --scan
+          export GRADLE_OPTS="-Dgradle.scan.termsOfServiceUrl=https://gradle.com/terms-of-service -Dgradle.scan.termsOfServiceAgree=yes"
+          ./gradlew assembleDebug
 
-      - name: Subir APK (si existe)
+      - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: CodeAssist-APK
           path: app/build/outputs/apk/debug/app-debug.apk
-        continue-on-error: true
