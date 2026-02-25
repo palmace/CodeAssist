@@ -1,4 +1,4 @@
-name: Android CI (Debug Completo)
+name: Android CI
 
 on:
   push:
@@ -9,8 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
       - name: Configurar JDK 11
         uses: actions/setup-java@v4
         with:
@@ -18,10 +19,10 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Compilar con logs completos
+      - name: Compilar con Build Scan
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace --info --no-daemon
+          ./gradlew assembleDebug --scan --stacktrace --no-daemon
 
       - name: Subir APK (si existe)
         uses: actions/upload-artifact@v4
