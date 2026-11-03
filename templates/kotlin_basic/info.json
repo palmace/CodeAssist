@@ -1,0 +1,6 @@
+{
+  "name": "Kotlin Project",
+  "minSdk": 24,
+  "supportsJava": false,
+  "supportsKotlin": true
+}

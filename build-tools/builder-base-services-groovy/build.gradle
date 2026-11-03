@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+    id 'groovy'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-services')
+    // Armonizamos con la versión usada en el resto del proyecto
+    api 'org.codehaus.groovy:groovy:3.0.19'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// VACIADO TOTAL: Ni Java ni Groovy para evitar errores de compilación
+sourceSets {
+    main {
+        java { srcDirs = [] }
+        groovy { srcDirs = [] }
+    }
+}

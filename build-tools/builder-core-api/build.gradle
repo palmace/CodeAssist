@@ -1,0 +1,48 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    // Cambiado de :common a :common-jvm para evitar ambigüedad en módulos Java
+    api project(':common-jvm')
+    api project(':build-tools:builder-base-annotations')
+    api project(':build-tools:builder-base-services')
+    api project(':build-tools:builder-base-services-groovy')
+    api project(':build-tools:builder-files')
+    
+    // Librerías externas requeridas por el API de Gradle
+    implementation 'org.codehaus.groovy:groovy:3.0.17'
+    implementation 'org.codehaus.groovy:groovy-ant:3.0.17'
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    api 'com.google.guava:guava:32.1.3-jre'
+    implementation 'org.apache.ant:ant:1.10.12'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+
+    // Anotaciones necesarias para resolver "symbol: class Nullable"
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+sourceSets {
+    main {
+        java { 
+            srcDirs = ['src/main/java']
+            // Exclusión de infraestructura duplicada
+            exclude 'org/gradle/internal/Factory.java'
+            exclude 'org/gradle/api/specs/OrSpec.java'
+            exclude 'org/gradle/api/specs/NotSpec.java'
+            exclude 'org/gradle/api/specs/CompositeSpec.java'
+            
+            // Paquetes compartidos con builder-files
+            exclude 'org/gradle/internal/file/pattern/**'
+            exclude 'org/gradle/internal/file/FilePathUtil.java'
+        }
+    }
+}

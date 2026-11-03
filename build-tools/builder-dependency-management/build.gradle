@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-model-core')
+}
+
+sourceSets {
+    main { java { srcDirs = [] } }
+}

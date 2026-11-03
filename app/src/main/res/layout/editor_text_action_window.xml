@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@android:drawable/edit_text"
+    android:padding="4dp"
+    android:gravity="center">
+
+    <!-- FASE 2: Botón de solución rápida (Bombilla) -->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_quick_fix"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/round_lightbulb_20"
+        android:visibility="gone"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Quick Fix" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_cut"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/round_content_cut_20"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Cut" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_copy"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/round_content_copy_20"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Copy" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_paste"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/round_content_paste_20"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Paste" />
+
+</LinearLayout>

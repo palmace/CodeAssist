@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-annotations')
+    
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    // Añadido para resolver "symbol: class Nullable" (org.jetbrains.annotations)
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['src/main/java'] }
+    }
+}

@@ -1,0 +1,36 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation 'org.codehaus.groovy:groovy:3.0.19'
+    
+    // v2026.141: r8 removido. Usamos el motor integrado en 'builder:8.5.0'
+    // para evitar conflictos de Duplicate Class en la PC.
+
+    compileOnly 'com.google.android:android:4.1.1.4'
+    compileOnly project(':android-stubs')
+    implementation 'com.google.guava:guava:32.1.3-android'
+    implementation 'commons-io:commons-io:2.11.0'
+    
+    implementation project(':build-tools:project')
+    implementation project(':build-tools:builder-api')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:build-logic')
+    implementation project(':build-tools:logging')
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.guava:guava:32.1.3-android'
+    }
+    // Bloqueo adicional
+    exclude group: 'com.android.tools', module: 'r8'
+}

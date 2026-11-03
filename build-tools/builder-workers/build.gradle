@@ -1,0 +1,16 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-process-services')
+    implementation 'javax.inject:javax.inject:1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

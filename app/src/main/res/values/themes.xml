@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme - Material 3 Puro -->
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Inflater personalizado de CodeAssist -->
+        <item name="viewInflaterClass">com.tyron.code.ui.theme.NoMaterialViewInflater</item>
+
+        <!-- Primary Colors & Containers -->
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+
+        <!-- Secondary Colors & Containers -->
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+
+        <!-- Tertiary Colors & Containers -->
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+
+        <!-- Error Colors -->
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+
+        <!-- Surface & Background -->
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_primaryInverse</item>
+
+        <!-- Compatibilidad para Diálogos y Contenedores Modernos -->
+        <item name="colorSurfaceBright">@color/md_theme_light_surface</item>
+        <item name="colorSurfaceDim">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorSurfaceContainer">@color/md_theme_light_surface</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_light_surface</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_light_surfaceVariant</item>
+
+        <!-- Estilos específicos de CodeAssist -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+        <item name="editorColorScheme">@style/EditorColorSchemeLight</item>
+        <item name="actionBarStyle">@style/Widget.AppTheme.ActionBar</item>
+
+        <!-- Sistema UI -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.AppTheme.ActionBar" parent="Widget.Material3.ActionBar.Solid">
+        <item name="background">@color/md_theme_light_primary</item>
+        <item name="titleTextStyle">@style/TextAppearance.AppTheme.ActionBar.Title</item>
+    </style>
+
+    <style name="TextAppearance.AppTheme.ActionBar.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/md_theme_light_onPrimary</item>
+    </style>
+
+</resources>

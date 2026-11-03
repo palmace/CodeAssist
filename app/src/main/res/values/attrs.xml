@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Preference">
+        <attr name="key" format="string" />
+        <attr name="entries" format="reference" />
+        <attr name="entryValues" format="reference" />
+        <attr name="defaultValue" format="string|integer|boolean|reference" />
+        <attr name="iconSpaceReserved" format="boolean" />
+        <attr name="summary" format="string" />
+    </declare-styleable>
+    <declare-styleable name="PreferenceScreen">
+        <attr name="fragment" format="string" />
+    </declare-styleable>
+</resources>

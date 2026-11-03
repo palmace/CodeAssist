@@ -1,0 +1,53 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.tyron.lint'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.7.0'
+    
+    // OMNI: Sincronía Zenith v28.5 - Blindaje de Classpath JDK
+    // Usamos implementation para forzar la presencia de las APIs del JDK en el entorno Android
+    implementation files('../eclipse-standalone/libs/org.eclipse.jdt.core-3.28.0.jar')
+    implementation project(':build-tools:eclipse-standalone')
+    
+    implementation project(':java-completion')
+    implementation project(':completion-api')
+    implementation project(':common-jvm')
+    
+    // APIs de procesamiento y compilación de nb-javac
+    implementation files('../javac/libs/nb-javac-17.0.0.0-api.jar')
+    implementation files('../javac/libs/nb-javac-17.0.0.0.jar')
+    
+    api project(':build-tools:javac')
+    implementation project(':build-tools:logging')
+    implementation project(':build-tools:xml-repository')
+    implementation project(':build-tools:project')
+
+    // APIs de IntelliJ/Kotlin PSI
+    api("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.24") {
+        exclude group: 'org.eclipse.jdt'
+    }
+    
+    compileOnly project(':android-stubs')
+    // Stub de javax.annotation para resolución de tipos
+    compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
+    
+    testImplementation 'junit:junit:4.13.2'
+}

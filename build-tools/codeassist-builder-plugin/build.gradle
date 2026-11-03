@@ -1,0 +1,78 @@
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+configurations.all {
+    exclude group: 'org.openjdk.javax.xml', module: 'xml'
+    exclude group: 'xml-apis', module: 'xml-apis'
+}
+
+dependencies {
+    compileOnly gradleApi()
+    compileOnly localGroovy()
+
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:build-logic')
+    implementation project(':build-tools:logging')
+    implementation project(':build-tools:manifmerger')
+    
+    def agpVersion = "8.5.0"
+    def toolsVersion = "31.5.0"
+
+    implementation "com.android.tools.build:builder:$agpVersion"
+    implementation "com.android.tools.build:builder-model:$agpVersion"
+    implementation "com.android.tools.build:gradle-api:$agpVersion"
+    implementation "com.android.tools.build:manifest-merger:$toolsVersion"
+    implementation "com.android.tools.build:aapt2-proto:8.5.0-11315950"
+    
+    implementation "com.android.tools:common:$toolsVersion"
+    implementation "com.android.tools:sdk-common:$toolsVersion"
+    implementation "com.android.tools:sdklib:$toolsVersion"
+    implementation "com.android.tools:repository:$toolsVersion"
+    implementation "com.android.tools:annotations:$toolsVersion"
+    implementation "com.android.tools.layoutlib:layoutlib-api:$toolsVersion"
+    
+    implementation 'org.ow2.asm:asm:9.6'
+    implementation 'org.ow2.asm:asm-commons:9.6'
+    implementation 'org.ow2.asm:asm-util:9.6'
+
+    // UNIFICACIÓN v39.4: Uso de objeto File directo para evitar colisión con el Project.java portado
+    implementation fileTree(file('../android-common-resources/libs')) {
+        include '*.jar'
+        exclude 'converted-common-30.40.0-alpha09.jar'
+        exclude 'manifest-merger.jar'
+    }
+
+    implementation 'com.android.tools.build.jetifier:jetifier-core:1.0.0-beta10'
+    implementation 'com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10'
+    
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+    implementation 'commons-io:commons-io:2.13.0'
+    implementation 'com.google.protobuf:protobuf-java:3.22.3'
+    implementation "com.android:signflinger:$agpVersion"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+            exclude 'org/gradle/api/tasks/incremental/IncrementalTaskInputs.java'
+        }
+        kotlin {
+            srcDirs = ['src/main/java']
+        }
+    }
+}

@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.tyron.viewbinding.task'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += 'src/main/java'
+            kotlin.srcDirs += 'src/main/kotlin'
+        }
+    }
+}
+
+dependencies {
+    // Al ser un módulo Android, mantenemos :common si fuera necesario, 
+    // pero para evitar ambigüedad en sus consumidores Java, nos aseguramos 
+    // de que apunte a :common-jvm si es posible.
+    implementation project(':common-jvm')
+    implementation project(':build-tools:viewbinding-lib')
+    implementation project(':build-tools:project')
+    implementation project(':build-tools:builder-api')
+    implementation project(':build-tools:logging')
+    implementation project(':completion-api')
+    
+    // Cambiamos a api para garantizar visibilidad de símbolos en el plugin
+    api project(':java-completion')
+    api project(':build-tools:build-logic')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+    implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.24"
+}

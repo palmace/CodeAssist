@@ -1,0 +1,159 @@
+package com.tyron.builder.compiler.incremental.java;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+
+import com.tyron.builder.BuildModule;
+import com.tyron.builder.SovereignConstants;
+import com.tyron.builder.SovereignMessage;
+import com.tyron.builder.SovereignSignal;
+import com.tyron.builder.compiler.BuildType;
+import com.tyron.builder.compiler.Task;
+import com.tyron.builder.exception.CompilationFailedException;
+import com.tyron.builder.log.ILogger;
+import com.tyron.builder.model.CompileRequest;
+import com.tyron.builder.project.api.JavaModule;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
+
+/**
+ * IncrementalJavaTask v2026.24: "The Omni-Linker Zenith".
+ * v2026.24: Inyección dinámica de Classpath (AARs + Kotlin Classes).
+ * v2026.24: Soporte para resolución de dependencias cruzadas en Joint Compilation.
+ */
+public class IncrementalJavaTask extends Task<JavaModule> {
+
+    private static final int MICRO_BATCH_SIZE = 10;
+    private File mOutputDir;
+
+    public IncrementalJavaTask(com.tyron.builder.project.Project project, JavaModule module, ILogger logger) {
+        super(project, module, logger);
+    }
+
+    @Override public String getName() { return "Java Compiler (OMNI v2026.24)"; }
+
+    @Override public void prepare(BuildType type) throws IOException {
+        mOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
+        if (!mOutputDir.exists()) mOutputDir.mkdirs();
+    }
+
+    @Override public void run() throws IOException, CompilationFailedException {
+        getLogger().info("🚀 OMNI: Iniciando Sincronía Java Zenith...");
+        File root = getModule().getRootFile();
+        List<File> files = collectJavaFiles(root);
+        if (files.isEmpty()) {
+            getLogger().warning("⚠️ No se detectaron fuentes Java. Saltando al siguiente nodo.");
+            return;
+        }
+
+        // CONSTRUCCIÓN DEL CLASSPATH TOTAL
+        Set<File> classpath = new LinkedHashSet<>();
+        classpath.add(BuildModule.getAndroidJar());
+        
+        // Incluir clases de Kotlin para soporte Interop
+        File kotlinClasses = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
+        if (kotlinClasses.exists()) classpath.add(kotlinClasses);
+        
+        // Incluir librerías extraídas
+        File explodedDir = new File(getModule().getBuildDirectory(), "bin/res/exploded-aar");
+        if (explodedDir.exists()) {
+            Collection<File> jars = FileUtils.listFiles(explodedDir, new String[]{"jar"}, true);
+            classpath.addAll(jars);
+        }
+
+        executeBatchedCompilation(files, classpath);
+    }
+
+    private void executeBatchedCompilation(List<File> files, Set<File> classpath) throws CompilationFailedException {
+        int total = files.size();
+        List<String> cpPaths = classpath.stream().map(File::getAbsolutePath).collect(Collectors.toList());
+
+        for (int i = 0; i < total; i += MICRO_BATCH_SIZE) {
+            List<File> batch = files.subList(i, Math.min(i + MICRO_BATCH_SIZE, total));
+            getLogger().info("⚡ Transmutando Lote Java [" + (i/MICRO_BATCH_SIZE + 1) + "/" + ((total + MICRO_BATCH_SIZE - 1)/MICRO_BATCH_SIZE) + "]");
+            
+            CompileRequest req = new CompileRequest();
+            req.outputDir = mOutputDir.getAbsolutePath();
+            req.sourceFiles = batch.stream().map(File::getAbsolutePath).collect(Collectors.toList());
+            req.androidJarPath = BuildModule.getAndroidJar().getAbsolutePath();
+            req.classpath = cpPaths;
+            req.allowImplicit = true; 
+            
+            delegateToService(req);
+        }
+    }
+
+    private void delegateToService(CompileRequest request) throws CompilationFailedException {
+        Context context = BuildModule.getContext();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicBoolean success = new AtomicBoolean(false);
+        final AtomicLong lastHeartbeat = new AtomicLong(System.currentTimeMillis());
+        final StringBuilder errorLog = new StringBuilder();
+
+        SovereignSignal.Observer observer = message -> {
+            if (message == null) return;
+            if (SovereignConstants.ACTION_HEARTBEAT.equals(message.action)) {
+                lastHeartbeat.set(System.currentTimeMillis());
+            } else if (SovereignConstants.ACTION_COMPILE_RESULT.equals(message.action)) {
+                success.set(message.getBooleanExtra(SovereignConstants.EXTRA_SUCCESS, false));
+                String out = message.getStringExtra(SovereignConstants.EXTRA_OUTPUT);
+                if (out != null) errorLog.append(out);
+                latch.countDown();
+            }
+        };
+
+        File reqFile = null;
+        try {
+            SovereignSignal.register(observer);
+            reqFile = new File(context.getCacheDir(), "javac_omniz_" + System.currentTimeMillis() + ".tmp");
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(reqFile))) {
+                oos.writeObject(request);
+            }
+
+            Intent intent = new Intent()
+                    .setComponent(new ComponentName(context.getPackageName(), "com.tyron.code.service.JavacService"))
+                    .putExtra("request_file", reqFile.getAbsolutePath());
+            
+            context.startForegroundService(intent);
+
+            while (!latch.await(5, TimeUnit.SECONDS)) {
+                long silence = System.currentTimeMillis() - lastHeartbeat.get();
+                if (silence > 60000) throw new Exception("TIMEOUT: Motor Javac silenciado en el vacío.");
+            }
+        } catch (Exception e) {
+            throw new CompilationFailedException("Fallo en Túnel Java: " + e.getMessage());
+        } finally {
+            SovereignSignal.unregister(observer);
+            if (reqFile != null) reqFile.delete();
+        }
+
+        if (!success.get()) {
+            throw new CompilationFailedException("Error en enjambre Java: \n" + errorLog.toString());
+        }
+    }
+
+    private List<File> collectJavaFiles(File root) {
+        List<File> files = new ArrayList<>();
+        String[] ext = new String[]{"java"};
+        File[] dirs = { new File(root, "src/main/java"), new File(root, "app/src/main/java"), 
+                        new File(getModule().getBuildDirectory(), "gen") };
+        for (File d : dirs) if (d.exists()) files.addAll(FileUtils.listFiles(d, ext, true));
+        return files;
+    }
+}

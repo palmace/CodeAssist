@@ -1,0 +1,39 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    namespace 'com.tyron.completion'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 34
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    api 'me.xdrop:fuzzywuzzy:1.3.1'
+    api project(':build-tools:project')
+    
+    // Guava explícito para resolver toImmutableList()
+    api 'com.google.guava:guava:32.1.3-android'
+
+    implementation project(':editor-api')
+    implementation project(':common')
+    implementation project(':language-api')
+    implementation project(':event-manager')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.24"
+
+    testImplementation 'junit:junit:4.13.2'
+}

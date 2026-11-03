@@ -1,0 +1,182 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    namespace 'com.tyron.code'
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId rootProject.ext.applicationId
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled = true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+        freeCompilerArgs += [
+            "-Xskip-prerelease-check",
+            "-Xjvm-default=all"
+        ]
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += [
+                "license/*", "plugin.properties", "plugin.xml", "about.html", ".api_description",
+                "about_files/*", "META-INF/eclipse.inf", "META-INF/INDEX.LIST", "META-INF/DEPENDENCIES",
+                "META-INF/LGPL2.1", "META-INF/groovy-release-info.properties", "META-INF/AL2.0", "README.md",
+                "META-INF/*.kotlin_module", "META-INF/*.version", "module-info.class", "META-INF/versions/*",
+                "com/sun/xml/bind/**/Messages_*.properties",
+                "com/sun/xml/bind/api/Messages*.properties",
+                "xsd/catalog.xml",
+                "META-INF/native-image/**",
+                "META-INF/LICENSE.md",
+                "META-INF/NOTICE.md",
+                "META-INF/LICENSE",
+                "META-INF/NOTICE",
+                "META-INF/license.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0"
+            ]
+            pickFirsts += [
+                "META-INF/sisu/*", "*/*.kotlin_builtins", "*/*/*.kotlin_builtins", "*/*/*/*.kotlin_builtins",
+                "META-INF/gradle-plugins/*", "META-INF/services/*", "META-INF/io.netty.versions.properties",
+                "com/sun/xml/bind/**/Messages.properties",
+                "com/sun/xml/bind/unmarshaller/Messages.properties",
+                "com/sun/xml/bind/v2/runtime/Messages.properties",
+                "version.properties",
+                "org/gradle/build-receipt.properties"
+            ]
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'jakarta.activation:jakarta.activation-api:1.2.2'
+        force 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
+        force 'com.github.albfernandez:juniversalchardet:2.4.0'
+        force 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.1'
+        force 'org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.21.1'
+        force 'com.google.guava:guava:32.1.3-android'
+    }
+    
+    exclude group: 'javax.activation'
+    exclude group: 'javax.xml.bind'
+    exclude group: 'com.sun.activation'
+    exclude module: 'r8'
+    exclude group: 'javax.xml.bind', module: 'jaxb-api'
+    exclude group: 'com.sun.activation', module: 'javax.activation'
+    exclude group: 'com.android.tools.build', module: 'manifest-merger'
+    exclude group: 'com.android.tools', module: 'manifest-merger'
+}
+
+dependencies {
+    // Core APIs
+    implementation project(":editor-api")
+    implementation project(":language-api")
+    implementation project(":completion-api")
+    implementation project(":actions-api")
+    implementation project(":fileeditor-api")
+    
+    // Compilación y Lenguaje
+    implementation project(':build-tools:javac') 
+    implementation (project(':build-tools:codeassist-builder-plugin')) {
+        exclude group: 'com.android.tools.build', module: 'manifest-merger'
+    }
+    implementation project(':java-completion')
+    implementation project(':xml-completion')
+    implementation project(':kotlin-completion')
+
+    implementation project(':build-tools:manifmerger')
+    implementation project(':build-tools:viewbinding-inject')
+    
+    implementation 'org.antlr:antlr4-runtime:4.13.1'
+    implementation 'org.codehaus.groovy:groovy:3.0.19'
+    implementation 'org.codehaus.groovy:groovy-ant:3.0.19'
+    
+    // Sora Editor y soporte TextMate (Trae tm4e internamente)
+    implementation "io.github.Rosemoe.sora-editor:editor:0.23.6"
+    implementation "io.github.Rosemoe.sora-editor:language-textmate:0.23.6"
+    implementation "io.github.Rosemoe.sora-editor:language-java:0.23.6"
+    
+    // BLACKSQUIRCLE EDITOR
+    implementation 'com.blacksquircle.ui:editorkit:2.1.0'
+    implementation 'com.blacksquircle.ui:language-base:2.1.0'
+    implementation 'com.blacksquircle.ui:language-java:2.1.0'
+    implementation 'com.blacksquircle.ui:language-xml:2.1.0'
+    
+    // Build Tools
+    implementation project(':build-tools:logging')
+    implementation project(':build-tools:xml-repository')
+    implementation project(':build-tools:project')
+    implementation project(':build-tools:builder-api')
+    implementation project(':build-tools:viewbinding-lib')
+    implementation project(':build-tools:builder-launcher')
+    
+    // Common & UI
+    implementation project(':common')
+    implementation project(':event-manager')
+    implementation project(':dependency-resolver')
+    implementation project(':treeview')
+    implementation project(':terminalview')
+    implementation project(':layout-preview')
+    implementation project(':code-editor')
+
+    implementation project(':eclipse-formatter')
+    
+    // AndroidX & UI
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+    
+    // Kotlin & Tools
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.ext.kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$rootProject.ext.kotlin_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'com.google.guava:guava:32.1.3-android'
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    
+    implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.21.1'
+    implementation 'org.apache.commons:commons-vfs2:2.9.0'
+    implementation "org.gradle:gradle-tooling-api:8.7"
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation 'com.github.angads25:filepicker:1.1.1'
+    implementation 'com.github.daniel-stoneuk:material-about-library:3.1.2'
+    implementation 'com.android.tools:common:31.5.0'
+    implementation ('com.android.tools.build:builder:8.5.0') {
+        exclude group: 'com.android.tools.build', module: 'manifest-merger'
+    }
+}

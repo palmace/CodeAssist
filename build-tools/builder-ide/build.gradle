@@ -1,0 +1,32 @@
+apply plugin: 'java-library'
+
+dependencies {
+
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-dependency-management')
+    implementation project(':build-tools:builder-plugins')
+    implementation project(':build-tools:builder-platform-base')
+    implementation project(':build-tools:builder-platform-jvm')
+    implementation project(':build-tools:builder-language-jvm')
+    implementation project(':build-tools:builder-java')
+    implementation project(':build-tools:builder-tooling-api')
+    implementation project(':build-tools:builder-testing-base')
+    implementation project(':build-tools:builder-testing-jvm')
+
+    implementation project(':common-jvm')
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'javax.inject:javax.inject:1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

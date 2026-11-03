@@ -1,0 +1,283 @@
+package com.tyron.builder.compiler.incremental.java;
+
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Environment;
+import com.tyron.builder.BuildModule;
+import com.tyron.builder.compiler.BuildType;
+import com.tyron.builder.compiler.Task;
+import com.tyron.builder.exception.CompilationFailedException;
+import com.tyron.builder.log.ILogger;
+import com.tyron.builder.model.CompileRequest;
+import com.tyron.builder.project.api.AndroidModule;
+import com.tyron.builder.project.api.JavaModule;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+/**
+ * Tarea Java Compiler v41.4.7: "The Atomic Unity - Zenith Pure Atoms Protocol".
+ * Fusiona Modelos, DAOs y R.java en el lote primordial para resolver dependencias circulares.
+ * v41.4.7: Sincronizado con el motor Zenith para máxima estabilidad en el Redmi 13C.
+ */
+public class IncrementalJavaTask extends Task<JavaModule> {
+
+    private File mOutputDir;
+    private File mProjectJar;
+    
+    private final List<File> mBatchAtoms = new ArrayList<>();   
+    private final List<File> mBatchLife = new ArrayList<>();      
+
+    public IncrementalJavaTask(com.tyron.builder.project.Project project, JavaModule module, ILogger logger) {
+        super(project, module, logger);
+    }
+
+    @Override
+    public String getName() { return "Java Compiler (OMNI v41.4.7)"; }
+
+    @Override
+    public void prepare(BuildType type) throws IOException {
+        File buildDir = getModule().getBuildDirectory();
+        mOutputDir = new File(buildDir, "bin/java/classes");
+        mProjectJar = new File(buildDir, "bin/java/project-classes.jar");
+        
+        if (mOutputDir.exists()) FileUtils.cleanDirectory(mOutputDir);
+        else mOutputDir.mkdirs();
+        
+        if (mProjectJar.exists()) mProjectJar.delete();
+        
+        mBatchAtoms.clear();
+        mBatchLife.clear();
+        
+        System.runFinalization();
+        System.gc();
+    }
+
+    @Override
+    public void run() throws IOException, CompilationFailedException {
+        getLogger().info("------------------------------------------");
+        getLogger().info("🚀 OMNI v41.4.7: Zenith Atomic Unity Activated");
+        
+        File moduleRoot = getModule().getRootFile();
+        File buildDir = getModule().getBuildDirectory();
+        
+        List<File> allFiles = collectAllJavaFiles(moduleRoot, buildDir);
+        
+        // v41.4.7: Clasificación Atómica (Atoms + Data vs Life)
+        classifyAtomicUnity(allFiles);
+
+        Set<File> detectedRoots = discoverSourceRoots(allFiles);
+        List<String> sourcePaths = detectedRoots.stream()
+            .map(File::getAbsolutePath)
+            .collect(Collectors.toList());
+        
+        for (String root : sourcePaths) {
+            getLogger().info("OMNI: [OmniRoot] Raíz detectada: " + root);
+        }
+
+        Set<File> baseClasspath = new LinkedHashSet<>();
+        baseClasspath.add(findAndroidJar());
+        addVerifiedJars(new File(buildDir, "bin/res/exploded-aar"), baseClasspath);
+        
+        File lambdaStubs = BuildModule.getLambdaStubs();
+        if (lambdaStubs != null && lambdaStubs.exists()) baseClasspath.add(lambdaStubs);
+        
+        List<String> classpathPaths = baseClasspath.stream()
+            .map(File::getAbsolutePath)
+            .distinct()
+            .collect(Collectors.toCollection(ArrayList::new));
+
+        // v41.4.7: Lotes de tamaño dinámico para el Redmi 13C
+        final int ATOM_BATCH_SIZE = 25; 
+        final int LIFE_BATCH_SIZE = 15;
+
+        processBatch("[ATOMS]", mBatchAtoms, ATOM_BATCH_SIZE, true, classpathPaths, sourcePaths);
+        processBatch("[LIFE]", mBatchLife, LIFE_BATCH_SIZE, false, classpathPaths, sourcePaths);
+        
+        getLogger().info("✅ OMNI v41.4.7: Unificación Atómica completada.");
+    }
+
+    private void processBatch(String name, List<File> files, int batchSize, boolean allowImplicit, List<String> classpath, List<String> sourcePaths) throws IOException, CompilationFailedException {
+        if (files.isEmpty()) return;
+        
+        int total = files.size();
+        for (int i = 0; i < total; i += batchSize) {
+            int end = Math.min(i + batchSize, total);
+            List<File> current = new ArrayList<>(files.subList(i, end));
+            
+            getLogger().info("OMNI Lote " + name + ": Compilando " + current.size() + " archivos...");
+            CompileRequest req = createRequest(current, classpath, sourcePaths);
+            req.allowImplicit = allowImplicit;
+            delegateToService(req);
+            
+            updateProjectJar();
+            updateClasspathWithJar(classpath);
+            System.gc();
+        }
+    }
+
+    private List<File> collectAllJavaFiles(File moduleRoot, File buildDir) {
+        List<File> list = new ArrayList<>();
+        File[] searchPaths = {
+            new File(moduleRoot, "src/main/java"),
+            new File(moduleRoot, "app/src/main/java"),
+            new File(buildDir, "gen"),
+            new File(buildDir, "generated")
+        };
+        for (File dir : searchPaths) {
+            if (dir != null && dir.exists()) {
+                Collection<File> found = FileUtils.listFiles(dir, new String[]{"java"}, true);
+                for (File f : found) if (!list.contains(f)) list.add(f);
+            }
+        }
+        return list;
+    }
+
+    private void classifyAtomicUnity(List<File> allFiles) {
+        for (File f : allFiles) {
+            String path = f.getAbsolutePath().replace("\\", "/").toLowerCase();
+            String name = f.getName().toLowerCase();
+            
+            // v41.4.7: Materia Primordial (R, gen, models, data, dao)
+            if (name.equals("r.java") || path.contains("/gen/") || path.contains("/generated/") || 
+                path.contains("/models/") || path.contains("/model/") || name.endsWith("model.java") ||
+                path.contains("/data/") || path.contains("/dao/") || name.contains("database") || name.contains("dao") || name.endsWith("db.java")) {
+                mBatchAtoms.add(f);
+            } else {
+                mBatchLife.add(f);
+            }
+        }
+        
+        // Seguro de lote vacío
+        if (mBatchAtoms.isEmpty() && !allFiles.isEmpty()) {
+            mBatchAtoms.add(allFiles.get(0));
+            mBatchLife.remove(allFiles.get(0));
+        }
+    }
+
+    private Set<File> discoverSourceRoots(List<File> allFiles) {
+        Set<File> roots = new LinkedHashSet<>();
+        Pattern packagePattern = Pattern.compile("^\\s*package\\s+([a-zA-Z_][a-zA-Z0-9_.]*)\\s*;");
+
+        for (File f : allFiles) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (line.startsWith("package")) {
+                        Matcher m = packagePattern.matcher(line);
+                        if (m.find()) {
+                            String pkg = m.group(1);
+                            File root = f.getParentFile();
+                            String[] parts = pkg.split("\\.");
+                            for (int i = parts.length - 1; i >= 0; i--) {
+                                if (root != null && root.getName().equalsIgnoreCase(parts[i])) {
+                                    root = root.getParentFile();
+                                }
+                            }
+                            if (root != null) roots.add(root);
+                        }
+                        break;
+                    } else if (line.startsWith("public") || line.startsWith("class") || line.startsWith("import")) {
+                        // Si no hay package, la raíz es el mismo directorio
+                        roots.add(f.getParentFile());
+                        break;
+                    }
+                }
+            } catch (IOException ignored) {}
+        }
+        return roots;
+    }
+
+    private void updateProjectJar() throws IOException {
+        if (!mOutputDir.exists()) return;
+        Collection<File> classFiles = FileUtils.listFiles(mOutputDir, new String[]{"class"}, true);
+        if (classFiles.isEmpty()) return;
+        
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(mProjectJar))) {
+            for (File file : classFiles) {
+                String entryName = mOutputDir.toURI().relativize(file.toURI()).getPath();
+                zos.putNextEntry(new ZipEntry(entryName));
+                try (FileInputStream fis = new FileInputStream(file)) { IOUtils.copy(fis, zos); }
+                zos.closeEntry();
+            }
+        }
+    }
+
+    private void updateClasspathWithJar(List<String> classpath) {
+        if (mProjectJar.exists()) {
+            String path = mProjectJar.getAbsolutePath();
+            if (!classpath.contains(path)) classpath.add(0, path); 
+        }
+    }
+
+    private CompileRequest createRequest(List<File> sources, List<String> classpath, List<String> sourcePath) {
+        CompileRequest request = new CompileRequest();
+        request.projectRoot = getModule().getRootFile().getAbsolutePath();
+        request.outputDir = mOutputDir.getAbsolutePath();
+        request.androidJarPath = findAndroidJar().getAbsolutePath();
+        request.sourceFiles = sources.stream().map(File::getAbsolutePath).collect(Collectors.toList());
+        request.classpath = classpath;
+        request.sourcePath = sourcePath;
+        return request;
+    }
+
+    private void addVerifiedJars(File dir, Set<File> set) {
+        if (dir == null || !dir.exists()) return;
+        Collection<File> found = FileUtils.listFiles(dir, new String[]{"jar"}, true);
+        for (File f : found) if (f.length() > 0) set.add(f);
+    }
+
+    private File findAndroidJar() {
+        String sd = Environment.getExternalStorageDirectory().getPath();
+        File f34 = new File(sd, "/Android_install/Sdk/platforms/android-34/android.jar");
+        if (f34.exists()) return f34;
+        return BuildModule.getAndroidJar();
+    }
+
+    private void delegateToService(CompileRequest request) throws CompilationFailedException {
+        Context context = BuildModule.getContext();
+        File requestFile = new File(context.getCacheDir(), "compile_request_v41_4_7.tmp");
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(requestFile))) {
+            oos.writeObject(request);
+        } catch (IOException e) { throw new CompilationFailedException("Error Proxy v41.4.7: " + e.getMessage()); }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicBoolean success = new AtomicBoolean(false);
+        final StringBuilder errors = new StringBuilder();
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override public void onReceive(Context context, Intent intent) {
+                success.set(intent.getBooleanExtra("success", false));
+                String error = intent.getStringExtra("error");
+                if (error != null) errors.append(error);
+                latch.countDown();
+            }
+        };
+        IntentFilter filter = new IntentFilter("com.tyron.code.COMPILE_RESULT");
+        try {
+            try {
+                java.lang.reflect.Field f = Context.class.getField("RECEIVER_EXPORTED");
+                context.registerReceiver(receiver, filter, (int)f.get(null));
+            } catch (Exception e) { context.registerReceiver(receiver, filter); }
+            Intent serviceIntent = new Intent();
+            serviceIntent.setComponent(new ComponentName(context.getPackageName(), "com.tyron.code.service.JavacService"));
+            serviceIntent.putExtra("request_file", requestFile.getAbsolutePath());
+            context.startForegroundService(serviceIntent);
+            if (!latch.await(15, TimeUnit.MINUTES)) throw new CompilationFailedException("Javac Timeout v41.4.7.");
+        } catch (Exception e) { throw new CompilationFailedException("Error IPC v41.4.7: " + e.getMessage()); }
+        finally { try { context.unregisterReceiver(receiver); } catch (Exception ignored) {} }
+        if (!success.get()) throw new CompilationFailedException("Fallo en lote v41.4.7:\n" + errors.toString());
+    }
+}

@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+}
+dependencies {
+    // Se elimina la dependencia compile-time hacia jaxp-internal para romper el ciclo.
+    // La clase XPathFactoryImpl se carga dinámicamente.
+    testImplementation project(':build-tools:jaxp:jaxp-internal')
+    testImplementation 'junit:junit:4.+'
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs.addAll(['--release', '8'])
+}

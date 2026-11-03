@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // Cambiado de :common a :common-jvm para evitar ambigüedad en módulos Java
+    implementation project(':common-jvm')
+    implementation 'androidx.annotation:annotation:1.3.0'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

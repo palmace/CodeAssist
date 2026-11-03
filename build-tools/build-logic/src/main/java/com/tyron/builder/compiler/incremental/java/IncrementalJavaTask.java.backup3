@@ -1,0 +1,148 @@
+package com.tyron.builder.compiler.incremental.java;
+
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Environment;
+import com.tyron.builder.BuildModule;
+import com.tyron.builder.compiler.BuildType;
+import com.tyron.builder.compiler.Task;
+import com.tyron.builder.exception.CompilationFailedException;
+import com.tyron.builder.log.ILogger;
+import com.tyron.builder.model.CompileRequest;
+import com.tyron.builder.project.api.JavaModule;
+import com.tyron.builder.project.cache.CacheHolder;
+import org.apache.commons.io.FileUtils;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
+/**
+ * Java Compiler v41.4.60: "The Zenith Synchronizer - Global Stability".
+ * v41.4.60: Restaura CACHE_KEY para estabilizar el motor de build-tools y 
+ * mantiene el Protocolo de Compilación en Cascada global para Material.
+ */
+public class IncrementalJavaTask extends Task<JavaModule> {
+
+    public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
+            new CacheHolder.CacheKey<>("javaCache");
+
+    private File mOutputDir;
+    private File mProjectJar;
+    
+    public IncrementalJavaTask(com.tyron.builder.project.Project project, JavaModule module, ILogger logger) {
+        super(project, module, logger);
+    }
+
+    @Override
+    public String getName() { return "Java Compiler (OMNI v41.4.60)"; }
+
+    @Override
+    public void prepare(BuildType type) throws IOException {
+        File buildDir = getModule().getBuildDirectory();
+        mOutputDir = new File(buildDir, "bin/java/classes");
+        mProjectJar = new File(buildDir, "bin/java/project-classes.jar");
+        if (mOutputDir.exists()) FileUtils.cleanDirectory(mOutputDir);
+        else mOutputDir.mkdirs();
+        if (mProjectJar.exists()) mProjectJar.delete();
+    }
+
+    @Override
+    public void run() throws IOException, CompilationFailedException {
+        getLogger().info("------------------------------------------");
+        getLogger().info("🚀 OMNI v41.4.60: Zenith Java Sync Activated");
+        
+        File buildDir = getModule().getBuildDirectory();
+        List<File> allFiles = collectAllJavaFiles();
+        
+        List<File> genesisFiles = allFiles.stream()
+            .filter(f -> f.getName().equalsIgnoreCase("R.java") || f.getAbsolutePath().contains("/gen/"))
+            .collect(Collectors.toList());
+        List<File> logosFiles = allFiles.stream()
+            .filter(f -> !genesisFiles.contains(f))
+            .collect(Collectors.toList());
+
+        Set<File> classpath = new LinkedHashSet<>();
+        classpath.add(findAndroidJar());
+        addVerifiedJars(new File(buildDir, "bin/res/exploded-aar"), classpath);
+        
+        List<String> cpPaths = classpath.stream().map(File::getAbsolutePath).collect(Collectors.toList());
+        List<String> srcPaths = Arrays.asList(new File(getModule().getRootFile(), "app/src/main/java").getAbsolutePath(), new File(buildDir, "gen").getAbsolutePath());
+
+        if (!genesisFiles.isEmpty()) {
+            getLogger().info("OMNI: [Génesis] Compilando símbolos (" + genesisFiles.size() + " archivos)...");
+            executeCompileInternal(genesisFiles, cpPaths, srcPaths);
+            if (mOutputDir.exists()) cpPaths.add(0, mOutputDir.getAbsolutePath());
+        }
+
+        if (!logosFiles.isEmpty()) {
+            getLogger().info("OMNI: [Logos] Compilando lógica (" + logosFiles.size() + " archivos)...");
+            executeCompileInternal(logosFiles, cpPaths, srcPaths);
+        }
+        
+        getLogger().info("✅ OMNI v41.4.60: Sincronía de Java estabilizada.");
+    }
+
+    private void executeCompileInternal(List<File> files, List<String> cp, List<String> src) throws CompilationFailedException {
+        CompileRequest req = new CompileRequest();
+        req.projectRoot = getModule().getRootFile().getAbsolutePath();
+        req.outputDir = mOutputDir.getAbsolutePath();
+        req.androidJarPath = findAndroidJar().getAbsolutePath();
+        req.sourceFiles = files.stream().map(File::getAbsolutePath).collect(Collectors.toList());
+        req.classpath = cp;
+        req.sourcePath = src;
+        req.allowImplicit = true;
+        delegateToService(req);
+    }
+
+    private void delegateToService(CompileRequest request) throws CompilationFailedException {
+        Context context = BuildModule.getContext();
+        File requestFile = new File(context.getCacheDir(), "compile_request_v41_4_60.tmp");
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(requestFile))) {
+            oos.writeObject(request);
+        } catch (IOException e) { throw new CompilationFailedException(e.getMessage()); }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicBoolean success = new AtomicBoolean(false);
+        final StringBuilder errorReport = new StringBuilder();
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override public void onReceive(Context context, Intent intent) {
+                success.set(intent.getBooleanExtra("success", false));
+                String err = intent.getStringExtra("error");
+                if (err != null) errorReport.append(err);
+                latch.countDown();
+            }
+        };
+        context.registerReceiver(receiver, new IntentFilter("com.tyron.code.COMPILE_RESULT"));
+        Intent intent = new Intent().setComponent(new ComponentName(context.getPackageName(), "com.tyron.code.service.JavacService")).putExtra("request_file", requestFile.getAbsolutePath());
+        context.startForegroundService(intent);
+        try { if (!latch.await(15, TimeUnit.MINUTES)) throw new Exception("Javac Timeout"); } catch (Exception e) { throw new CompilationFailedException(e.getMessage()); }
+        finally { context.unregisterReceiver(receiver); }
+        if (!success.get()) throw new CompilationFailedException(errorReport.toString());
+    }
+
+    private List<File> collectAllJavaFiles() {
+        List<File> list = new ArrayList<>();
+        File srcDir = new File(getModule().getRootFile(), "app/src/main/java");
+        File genDir = new File(getModule().getBuildDirectory(), "gen");
+        if (srcDir.exists()) list.addAll(FileUtils.listFiles(srcDir, new String[]{"java"}, true));
+        if (genDir.exists()) list.addAll(FileUtils.listFiles(genDir, new String[]{"java"}, true));
+        return list;
+    }
+
+    private File findAndroidJar() {
+        return new File(Environment.getExternalStorageDirectory(), "Android_install/Sdk/platforms/android-34/android.jar");
+    }
+
+    private void addVerifiedJars(File dir, Set<File> set) {
+        if (dir != null && dir.exists()) {
+            Collection<File> found = FileUtils.listFiles(dir, new String[]{"jar"}, true);
+            for (File f : found) if (f.length() > 0) set.add(f);
+        }
+    }
+}

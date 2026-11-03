@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile) {
+    // Esto permite compilar paquetes java.* sin errores de restricción de módulos en Java 17
+    options.compilerArgs.addAll(['--release', '8'])
+}

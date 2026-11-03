@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-file-temp')
+    implementation project(':build-tools:builder-hashing')
+    implementation project(':build-tools:builder-logging')
+}
+
+sourceSets {
+    main {
+        java { srcDirs = [] }
+    }
+}

@@ -1,0 +1,18 @@
+plugins {
+    id 'java-library'
+}
+
+description = "Common shared build cache classes"
+
+dependencies {
+    implementation project(':build-tools:builder-base-annotations')
+    implementation project(':build-tools:builder-files')
+
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

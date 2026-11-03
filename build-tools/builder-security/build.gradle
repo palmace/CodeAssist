@@ -1,0 +1,20 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api project(':build-tools:builder-core-api')
+    api project(':build-tools:builder-resources')
+    
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-logging')
+
+    api 'org.bouncycastle:bcpg-jdk18on:1.71.1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

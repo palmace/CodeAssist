@@ -1,0 +1,79 @@
+plugins {
+    id 'java-library'
+}
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+configurations.all {
+    exclude group: 'org.glassfish.jaxb', module: 'jaxb-runtime'
+    exclude group: 'javax.xml.bind', module: 'jaxb-api'
+    exclude group: 'com.sun.activation', module: 'javax.activation'
+}
+
+dependencies {
+    implementation projects.common
+
+    implementation projects.buildTools.builderBaseServices
+    implementation projects.buildTools.builderBaseServicesGroovy
+    implementation projects.buildTools.builderCore
+    implementation projects.buildTools.builderModelCore
+    implementation projects.buildTools.builderCoreApi
+    implementation projects.buildTools.builderLogging
+    implementation projects.buildTools.builderDiagnostics
+    implementation projects.buildTools.builderPlugins
+    implementation projects.buildTools.builderWorkers
+    implementation projects.buildTools.builderJava
+    implementation projects.buildTools.builderLanguageJvm
+    implementation projects.buildTools.builderPlatformJvm
+    implementation projects.buildTools.builderProcessServices
+    implementation projects.buildTools.builderDependencyManagement
+    implementation projects.buildTools.builderToolingApi
+    implementation projects.buildTools.project
+    implementation projects.buildTools.fileCollections
+    implementation projects.buildTools.logging
+    implementation projects.buildTools.builderBuildEvents
+
+    implementation projects.buildTools.androidCommonResources
+
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'org.ow2.asm:asm:9.3'
+    implementation 'org.ow2.asm:asm-commons:9.3'
+    implementation 'com.android:zipflinger:8.5.0'
+    implementation 'com.android.tools:annotations:31.5.0'
+    implementation 'com.android.tools:common:31.5.0'
+
+    // CORRECCIÓN: Versión oficial de AAPT2 para AGP 8.5.0
+    implementation "com.android.tools.build:aapt2-proto:8.5.0-11315910"
+    implementation "com.android.tools.layoutlib:layoutlib-api:31.5.0"
+    implementation "com.android.tools:sdk-common:31.5.0"
+    implementation 'com.google.protobuf:protobuf-java:3.22.3'
+    
+    // CORRECCIÓN: Grupo correcto para Jetifier
+    implementation 'com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10'
+
+    implementation 'com.squareup:javawriter:2.5.1'
+    implementation 'org.bouncycastle:bcutil-jdk18on:1.71.1'
+    implementation "com.android.tools.build:apkzlib:8.5.0"
+    implementation "com.android.tools.build:apksig:8.5.0"
+    implementation "com.android:signflinger:8.5.0"
+
+    compileOnly 'javax.xml.bind:jaxb-api:2.3.1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['src/main/java'] }
+        kotlin { srcDirs = ['src/main/java', 'src/main/kotlin'] }
+    }
+}

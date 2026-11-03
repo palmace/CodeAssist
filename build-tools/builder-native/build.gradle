@@ -1,0 +1,29 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-annotations')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:builder-file-temp')
+    
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation "net.rubygrapefruit:native-platform:0.22-milestone-23"
+    implementation "net.rubygrapefruit:file-events:0.22-milestone-23"
+    implementation 'com.google.guava:guava:32.1.3-jre'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+}

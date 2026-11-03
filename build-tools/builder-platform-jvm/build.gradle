@@ -1,0 +1,41 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-functional')
+    implementation project(':build-tools:builder-dependency-management')
+    implementation project(':build-tools:builder-execution')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:builder-jvm-services')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-normalization-java')
+    implementation project(':build-tools:builder-persistent-cache')
+    implementation project(':build-tools:builder-platform-base')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:builder-resources')
+
+    // Cambiado de :common a :common-jvm para evitar ambigüedad
+    implementation project(':common-jvm')
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'javax.inject:javax.inject:1'
+    implementation "net.rubygrapefruit:native-platform:0.22-milestone-23"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java { srcDirs = [] }
+    }
+}

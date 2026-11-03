@@ -1,0 +1,40 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:builder-platform-base')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-persistent-cache')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-dependency-management')
+    implementation project(':build-tools:builder-java')
+    implementation project(':build-tools:builder-language-jvm')
+    implementation project(':build-tools:builder-execution')
+    implementation project(':build-tools:snapshots')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:builder-platform-jvm')
+
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'javax.inject:javax.inject:1'
+    implementation project(path: ':build-tools:builder-testing-base')
+    implementation project(path: ':build-tools:builder-testing-jvm')
+    implementation project(path: ':build-tools:builder-reporting')
+    implementation('org.codehaus.groovy:groovy-templates:3.0.19') {
+        transitive = false
+    }
+
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

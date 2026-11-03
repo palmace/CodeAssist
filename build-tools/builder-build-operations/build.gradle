@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // Cambiado de :common a :common-jvm para evitar ambigüedad en módulos Java
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-annotations')
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    
+    // Anotaciones necesarias para resolver "symbol: class Nullable"
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+}

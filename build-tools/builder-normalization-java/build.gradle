@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+}
+
+description = "API extraction for Java"
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-annotations')
+    implementation project(':build-tools:builder-hashing')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:builder-functional')
+    implementation project(':build-tools:snapshots')
+
+    implementation 'org.ow2.asm:asm:9.3'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

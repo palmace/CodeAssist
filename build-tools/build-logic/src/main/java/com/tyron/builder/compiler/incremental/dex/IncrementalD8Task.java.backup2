@@ -1,0 +1,166 @@
+package com.tyron.builder.compiler.incremental.dex;
+
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Environment;
+import com.tyron.builder.BuildModule;
+import com.tyron.builder.compiler.BuildType;
+import com.tyron.builder.compiler.Task;
+import com.tyron.builder.exception.CompilationFailedException;
+import com.tyron.builder.log.ILogger;
+import com.tyron.builder.model.DexRequest;
+import com.tyron.builder.project.api.AndroidModule;
+import com.tyron.builder.project.cache.CacheHolder;
+import org.apache.commons.io.FileUtils;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Compilador DEX v41.4.9: "The Dex Purifier - Gemini Patch".
+ * Implementa filtros agresivos contra herramientas de construcción intrusas (d8, r8).
+ * Garantiza compatibilidad de versiones DEX con minSdk.
+ */
+public class IncrementalD8Task extends Task<AndroidModule> {
+
+    // DEFINICIÓN CRÍTICA DE CACHE_KEY PARA COMPATIBILIDAD CON JAVAD8TASK
+    public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY = 
+            new CacheHolder.CacheKey<>("dexCache");
+
+    public IncrementalD8Task(com.tyron.builder.project.Project project, AndroidModule module, ILogger logger) {
+        super(project, module, logger);
+    }
+
+    @Override
+    public String getName() { return "D8 Dexer (OMNI v41.4.9)"; }
+
+    @Override
+    public void prepare(BuildType type) throws IOException {
+        File buildDir = getModule().getBuildDirectory();
+        File dexOutDir = new File(buildDir, "bin/dex/out");
+        if (dexOutDir.exists()) FileUtils.cleanDirectory(dexOutDir);
+        else dexOutDir.mkdirs();
+        System.gc();
+    }
+
+    @Override
+    public void run() throws IOException, CompilationFailedException {
+        getLogger().info("------------------------------------------");
+        getLogger().info("🚀 OMNI v41.4.9: Dex Purifier Protocol Activated");
+
+        File buildDir = getModule().getBuildDirectory();
+        File projectJar = new File(buildDir, "bin/java/project-classes.jar");
+        
+        if (!projectJar.exists() || projectJar.length() == 0) {
+            throw new CompilationFailedException("Error Crítico v41.4.9: project-classes.jar no encontrado.");
+        }
+
+        DexRequest request = new DexRequest();
+        request.inputs = new ArrayList<>();
+        request.libraryFiles = new ArrayList<>();
+        
+        request.inputs.add(projectJar.getAbsolutePath());
+        
+        List<File> verifiedLibs = collectCleanLibraries();
+        for (File lib : verifiedLibs) {
+            request.inputs.add(lib.getAbsolutePath());
+        }
+        
+        getLogger().info("Dexer: Procesando " + verifiedLibs.size() + " dependencias limpias.");
+
+        request.outputDir = new File(buildDir, "bin/dex/out").getAbsolutePath();
+        request.minApi = getModule().getMinSdk();
+        request.isRelease = false; 
+        
+        File sdkJar = findModernSdk();
+        if (sdkJar != null) request.libraryFiles.add(sdkJar.getAbsolutePath());
+
+        delegateToService(request);
+        getLogger().info("✅ OMNI v41.4.9: Ensamblaje DEX completado.");
+    }
+
+    private List<File> collectCleanLibraries() {
+        Set<File> cleanClasspath = new LinkedHashSet<>();
+        File buildDir = getModule().getBuildDirectory();
+        File explodedDir = new File(buildDir, "bin/res/exploded-aar");
+        
+        if (explodedDir.exists()) {
+            Collection<File> jars = FileUtils.listFiles(explodedDir, new String[]{"jar"}, true);
+            for (File jar : jars) {
+                String name = jar.getName().toLowerCase();
+                if (name.contains("d8") || name.contains("r8") || name.contains("compiler") || 
+                    name.contains("stub") || name.contains("lambda") || name.contains("javapoet")) {
+                    getLogger().info("OMNI: [Purifier] Excluyendo herramienta del DEX: " + name);
+                    continue;
+                }
+
+                if (isValidJar(jar)) {
+                    cleanClasspath.add(jar);
+                }
+            }
+        }
+        return new ArrayList<>(cleanClasspath);
+    }
+
+    private boolean isValidJar(File file) {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            return raf.length() > 4 && raf.readInt() == 0x504B0304; 
+        } catch (IOException e) { return false; }
+    }
+
+    private File findModernSdk() {
+        String sd = Environment.getExternalStorageDirectory().getPath();
+        File f34 = new File(sd, "/Android_install/Sdk/platforms/android-34/android.jar");
+        return f34.exists() ? f34 : BuildModule.getAndroidJar();
+    }
+
+    private void delegateToService(DexRequest request) throws CompilationFailedException {
+        Context context = BuildModule.getContext();
+        File requestFile = new File(context.getCacheDir(), "dex_request_v41_4_9.tmp");
+        
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(requestFile))) {
+            oos.writeObject(request);
+        } catch (IOException e) { throw new CompilationFailedException("IPC Error: " + e.getMessage()); }
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicBoolean success = new AtomicBoolean(false);
+        final StringBuilder errorReport = new StringBuilder();
+        
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override public void onReceive(Context context, Intent intent) {
+                success.set(intent.getBooleanExtra("success", false));
+                String err = intent.getStringExtra("error");
+                if (err != null) errorReport.append(err);
+                latch.countDown();
+            }
+        };
+        
+        IntentFilter filter = new IntentFilter("com.tyron.code.DEX_RESULT");
+        try {
+            try {
+                java.lang.reflect.Field f = Context.class.getField("RECEIVER_EXPORTED");
+                context.registerReceiver(receiver, filter, (int)f.get(null));
+            } catch (Exception e) { context.registerReceiver(receiver, filter); }
+            
+            Intent serviceIntent = new Intent();
+            serviceIntent.setComponent(new ComponentName(context.getPackageName(), "com.tyron.code.service.DexService"));
+            serviceIntent.putExtra("request_file", requestFile.getAbsolutePath());
+            context.startForegroundService(serviceIntent);
+            
+            if (!latch.await(20, TimeUnit.MINUTES)) throw new Exception("D8 Timeout.");
+        } catch (Exception e) {
+             throw new CompilationFailedException("D8 Link Error: " + e.getMessage());
+        } finally { 
+            try { context.unregisterReceiver(receiver); } catch (Exception ignored) {} 
+        }
+        
+        if (!success.get()) {
+            throw new CompilationFailedException("D8 Fallo Crítico (v41.4.9):\n" + errorReport.toString());
+        }
+    }
+}

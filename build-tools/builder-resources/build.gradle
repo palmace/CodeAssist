@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+description = "A set of general-purpose resource abstractions"
+
+dependencies {
+    // Cambiado de :common a :common-jvm para evitar ambigüedad
+    implementation project(':common-jvm')
+
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-enterprise-operations')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-native')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java { srcDirs = [] }
+    }
+}

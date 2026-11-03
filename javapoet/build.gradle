@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+}
+apply plugin: 'kotlin'
+
+configurations.implementation {
+    exclude group: "org.jetbrains", module: "annotations"
+}
+
+dependencies {
+    implementation project(path: ":build-tools:javac")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

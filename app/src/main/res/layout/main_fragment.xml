@@ -1,0 +1,85 @@
+<com.tyron.code.util.AllowChildInterceptDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            app:elevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingEnd="8dp">
+
+                <com.tyron.actions.impl.ActionToolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="0dp"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_weight="1"
+                    app:contentInsetStartWithNavigation="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sync_button_fallback"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:paddingTop="0dp"
+                    android:paddingBottom="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="SYNC"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#3E2723"
+                    app:cornerRadius="16dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:indicatorColor="#3E2723"
+            app:trackThickness="4dp" />
+
+        <com.tyron.code.util.NoInsetFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/root"
+                android:name="com.tyron.code.ui.editor.EditorContainerFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/editor_container_fragment" />
+
+        </com.tyron.code.util.NoInsetFrameLayout>
+    </LinearLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_root"
+        android:name="com.tyron.code.ui.file.tree.TreeFileManagerFragment"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="?android:attr/colorBackground"
+        android:layout_gravity="start" />
+
+</com.tyron.code.util.AllowChildInterceptDrawerLayout>

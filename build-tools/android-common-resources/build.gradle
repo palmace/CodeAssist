@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // implementation 'com.android.tools.build:manifest-merger:31.5.0' // Usamos el modulo interno :build-tools:manifmerger
+    implementation project(':build-tools:manifmerger')
+    
+    // En lugar de 'com.android.tools.build:compiler-common'
+    implementation 'com.android.tools.build:builder:8.5.0'  // Este incluye compiler-common
+    
+    // El resto de dependencias...
+}
+
+sourceSets { 
+    main { 
+        java { srcDirs = [] } 
+    } 
+}

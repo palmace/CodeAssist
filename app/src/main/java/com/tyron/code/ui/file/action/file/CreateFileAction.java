@@ -1,0 +1,124 @@
+package com.tyron.code.ui.file.action.file;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.text.Editable;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
+import com.tyron.actions.AnActionEvent;
+import com.tyron.actions.CommonDataKeys;
+import com.tyron.builder.project.Project;
+import com.tyron.code.R;
+import com.tyron.code.event.FileCreatedEvent;
+import com.tyron.code.ui.project.ProjectManager;
+import com.tyron.ui.treeview.TreeNode;
+import com.tyron.code.ui.file.CommonFileKeys;
+import com.tyron.code.ui.file.action.ActionContext;
+import com.tyron.code.ui.file.action.FileAction;
+import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
+import com.tyron.code.ui.file.tree.TreeUtil;
+import com.tyron.code.ui.file.tree.model.TreeFile;
+import com.tyron.common.util.AndroidUtilities;
+import com.tyron.common.util.SingleTextWatcher;
+
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * CreateFileAction v30.3: "The Zenith File Creator - Sovereign Signature".
+ * v30.3: Sincronía con AndroidUtilities v30.3 (Zenith) para alertas de error.
+ * v30.3: Blindaje de Eventos - Asegura la propagación del FileCreatedEvent al motor OMNI.
+ */
+public class CreateFileAction extends FileAction {
+
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.menu_action_new_file);
+    }
+
+    @Override
+    public boolean isApplicable(File file) {
+        return file.isDirectory();
+    }
+
+    @Override
+    public void actionPerformed(@NonNull AnActionEvent e) {
+        TreeFileManagerFragment fragment = (TreeFileManagerFragment) e.getRequiredData(CommonDataKeys.FRAGMENT);
+        TreeNode<TreeFile> currentNode = e.getRequiredData(CommonFileKeys.TREE_NODE);
+        ActionContext actionContext = new ActionContext(fragment, fragment.getTreeView(),
+                currentNode);
+        onMenuItemClick(actionContext);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void onMenuItemClick(ActionContext context) {
+        File currentDir = context.getCurrentNode().getValue().getFile();
+        AlertDialog dialog = new MaterialAlertDialogBuilder(context.getFragment().requireContext())
+                .setView(R.layout.create_class_dialog)
+                .setTitle(R.string.menu_action_new_file)
+                .setPositiveButton(R.string.create_class_dialog_positive, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+                
+        dialog.setOnShowListener((d) -> {
+            dialog.findViewById(R.id.til_class_type).setVisibility(View.GONE);
+            TextInputLayout til = dialog.findViewById(R.id.til_class_name);
+            EditText editText = dialog.findViewById(R.id.et_class_name);
+            Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+
+            til.setHint(R.string.file_name);
+            positive.setOnClickListener(v -> {
+                String fileName = editText.getText().toString();
+                if (fileName.isEmpty()) return;
+                
+                File fileToCreate = new File(currentDir, fileName);
+                if (!createFileSilently(fileToCreate)) {
+                    // OMNI: Firma Zenith Unificada v30.3 (Uso explícito de recursos)
+                    AndroidUtilities.showSimpleAlert(context.getFragment().requireContext(), 
+                        R.string.error, R.string.error_dir_access);
+                } else {
+                    refreshTreeView(context);
+                    dialog.dismiss();
+
+                    // Notificación inmediata al bus de eventos del Proyecto
+                    Project currentProject = ProjectManager.getInstance().getCurrentProject();
+                    if (currentProject != null) {
+                        currentProject.getEventManager().dispatchEvent(
+                                new FileCreatedEvent(fileToCreate)
+                        );
+                    }
+                }
+            });
+            editText.addTextChangedListener(new SingleTextWatcher() {
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    String text = editable.toString();
+                    File file = new File(currentDir, text);
+                    positive.setEnabled(!text.isEmpty() && !file.exists());
+                }
+            });
+        });
+        dialog.show();
+    }
+
+    private boolean createFileSilently(File file) {
+        try {
+            return file.createNewFile();
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private void refreshTreeView(ActionContext context) {
+        TreeNode<TreeFile> currentNode = context.getCurrentNode();
+        TreeUtil.updateNode(currentNode);
+        context.getTreeView().refreshTreeView();
+    }
+}

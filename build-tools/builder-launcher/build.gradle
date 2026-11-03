@@ -1,0 +1,53 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+
+    implementation project(':build-tools:codeassist-builder-plugin')
+
+    implementation project(':build-tools:builder-api')
+    implementation project(':build-tools:builder-tooling-api')
+    implementation project(':build-tools:builder-jvm-services')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-enterprise-operations')
+    implementation project(':build-tools:builder-enterprise-workers')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:builder-build-events')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:snapshots')
+    implementation project(':build-tools:builder-persistent-cache')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:file-watching')
+
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.ow2.asm:asm:9.3'
+
+
+    testRuntimeOnly 'net.rubygrapefruit:file-events-windows-i386-min:0.22-milestone-23'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'net.rubygrapefruit:native-platform:0.22-milestone-23'
+    testImplementation project(':build-tools:builder-api')
+    testImplementation project(':build-tools:builder-core-api')
+    testImplementation project(':build-tools:builder-core')
+    testImplementation project(':build-tools:builder-configuration-cache')
+    testImplementation project(':build-tools:builder-base-services-groovy')
+    testImplementation project(':build-tools:groovy-compiler')
+    testImplementation project(':build-tools:builder-dependency-management')
+    testImplementation project(':build-tools:builder-platform-base')
+    testImplementation project(':build-tools:builder-plugins')
+    testImplementation project(':build-tools:builder-plugin-use')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

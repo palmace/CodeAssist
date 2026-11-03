@@ -1,0 +1,80 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-core-api') 
+
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-enterprise-operations')
+    implementation project(':build-tools:builder-functional')
+    implementation project(':build-tools:builder-enterprise-workers')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-resources')
+    implementation project(':build-tools:builder-problems')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-model-groovy')
+    implementation project(':build-tools:builder-persistent-cache')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:builder-file-temp')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:snapshots')
+    implementation project(':build-tools:file-watching')
+    implementation project(':build-tools:builder-execution')
+    implementation project(':build-tools:builder-normalization-java')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:groovy-compiler')
+
+    implementation project(':build-tools:builder-api')
+
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.ant:ant:1.10.12'
+    implementation 'javax.inject:javax.inject:1'
+    implementation 'org.apache-extras.beanshell:bsh:2.0b6'
+    implementation 'org.ow2.asm:asm:9.3'
+    
+    implementation('org.codehaus.groovy:groovy-xml:3.0.19') {
+        exclude group: "org.codehaus.groovy", module: "groovy"
+    }
+    implementation('org.codehaus.groovy:groovy-templates:3.0.19') {
+        transitive = false
+    }
+
+    implementation "net.rubygrapefruit:native-platform:0.22-milestone-23"
+    implementation("net.rubygrapefruit:file-events:0.22-milestone-23")
+    implementation 'org.tomlj:tomlj:1.0.0'
+    implementation project(path: ':build-tools:builder-worker-processes')
+    implementation project(path: ':build-tools:builder-jvm-services')
+
+    compileOnly project(':android-stubs')
+    compileOnly gradleApi()
+}
+
+// v2026.152: EXCLUSIÓN CRÍTICA DE R8
+// builder:8.5.0 ya provee estas clases. Bloqueamos cualquier r8 independiente.
+configurations.all {
+    exclude group: 'com.android.tools', module: 'r8'
+}
+
+sourceSets {
+    main {
+        java { srcDirs = [] }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.addAll([
+        '--add-exports', 'java.base/sun.nio.ch=ALL-UNNAMED',
+        '--add-exports', 'java.base/java.lang=ALL-UNNAMED'
+    ])
+}

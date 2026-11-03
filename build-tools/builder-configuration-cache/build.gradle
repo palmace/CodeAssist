@@ -1,0 +1,43 @@
+plugins {
+    id 'java-library'
+}
+apply plugin: 'kotlin'
+
+description = "Configuration cache implementation"
+
+dependencies {
+    // Cambiado de :common a :common-jvm para evitar ambigüedad
+    implementation project(':common-jvm')
+
+    implementation project(':build-tools:builder-api')
+
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-composite-builds')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-dependency-management')
+    implementation project(':build-tools:builder-execution')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:builder-file-temp')
+    implementation project(':build-tools:file-watching')
+    implementation project(':build-tools:builder-functional')
+    implementation project(':build-tools:builder-hashing')
+    implementation project(':build-tools:builder-launcher')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:builder-persistent-cache')
+    implementation project(':build-tools:builder-resources')
+    implementation project(':build-tools:snapshots')
+
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation project(':build-tools:builder-plugin-use')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

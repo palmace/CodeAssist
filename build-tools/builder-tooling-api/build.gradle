@@ -1,0 +1,30 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation project(path: ':build-tools:builder-base-services')
+
+    implementation project(':common-jvm')
+    implementation project(path: ':build-tools:builder-logging')
+    implementation project(path: ':build-tools:builder-messaging')
+    implementation project(path: ':build-tools:builder-enterprise-operations')
+    implementation project(path: ':build-tools:builder-enterprise-workers')
+    implementation project(path: ':build-tools:builder-core')
+    implementation project(path: ':build-tools:builder-core-api')
+    implementation project(path: ':build-tools:builder-persistent-cache')
+    implementation project(path: ':build-tools:builder-wrapper')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = []
+        }
+    }
+}

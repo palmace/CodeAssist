@@ -1,0 +1,35 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-enterprise-operations')
+    implementation project(':build-tools:builder-build-events')
+    implementation project(':build-tools:builder-composite-builds')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-functional')
+    implementation project(':build-tools:builder-dependency-management')
+    implementation project(':build-tools:builder-launcher')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:builder-reporting')
+    implementation project(':build-tools:builder-resources')
+    implementation project(':build-tools:builder-testing-base')
+    implementation project(':build-tools:builder-testing-jvm')
+    implementation project(':build-tools:builder-tooling-api')
+    implementation project(':build-tools:builder-workers')
+
+    implementation project(':common-jvm')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

@@ -1,0 +1,70 @@
+package com.tyron.builder.compiler.manifest;
+
+import com.tyron.builder.compiler.BuildType;
+import com.tyron.builder.compiler.Task;
+import com.tyron.builder.exception.CompilationFailedException;
+import com.tyron.builder.log.ILogger;
+import com.tyron.builder.project.Project;
+import com.tyron.builder.project.api.AndroidModule;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Gestor de Manifiesto v41.4.4: "The Forensic Structural Merger - Zenith".
+ * Sincronizado con la arquitectura OMNI v41.4.4 para garantizar rutas absolutas y resolución determinista.
+ * Optimizado para el Redmi 13C: Gestión de memoria mejorada durante el anclaje de materia.
+ */
+public class ManifestMergeTask extends Task<AndroidModule> {
+
+    private File mOutputFile;
+    private File mMainManifest;
+
+    public ManifestMergeTask(Project project, AndroidModule module, ILogger logger) {
+        super(project, module, logger);
+    }
+
+    @Override
+    public String getName() { return "ManifestMerger (OMNI v41.4.4)"; }
+
+    @Override
+    public void prepare(BuildType type) throws IOException {
+        File root = getModule().getRootFile().getAbsoluteFile();
+        mMainManifest = findManifestStructural(root);
+        
+        File binDir = new File(getModule().getBuildDirectory(), "bin");
+        if (!binDir.exists() && !binDir.mkdirs()) {
+            throw new IOException("Fallo al crear zona de build estructural v41.4.4: " + binDir.getAbsolutePath());
+        }
+        
+        mOutputFile = new File(binDir, "AndroidManifest.xml");
+        
+        System.runFinalization();
+        System.gc();
+    }
+
+    private File findManifestStructural(File root) {
+        List<File> candidates = new ArrayList<>();
+        candidates.add(getModule().getManifestFile());
+        candidates.add(new File(root, "src/main/AndroidManifest.xml"));
+        candidates.add(new File(root, "app/src/main/AndroidManifest.xml"));
+        candidates.add(new File(root, "AndroidManifest.xml"));
+
+        for (File f : candidates) {
+            if (f != null && f.exists() && f.length() > 0) return f;
+        }
+        return null;
+    }
+
+    @Override
+    public void run() throws IOException, CompilationFailedException {
+        if (mMainManifest != null && mMainManifest.exists()) {
+            getLogger().info("OMNI: Anclando manifiesto estructural v41.4.4 desde: " + mMainManifest.getName());
+            FileUtils.copyFile(mMainManifest, mOutputFile);
+        } else {
+            throw new CompilationFailedException("Error Crítico v41.4.4: No se encontró el AndroidManifest.xml en la estructura del proyecto.");
+        }
+    }
+}

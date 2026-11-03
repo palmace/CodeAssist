@@ -1,0 +1,6 @@
+{
+  "name": "Java Modern",
+  "minSdk": 24,
+  "supportsJava": true,
+  "supportsKotlin": false
+}

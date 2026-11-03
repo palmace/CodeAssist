@@ -1,0 +1,60 @@
+plugins {
+    id 'java-library'
+}
+apply plugin: 'kotlin'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// v2026.185: Blindaje ANTLR - Forzamos 4.9.2 para evitar el desajuste de ATN en ViewBinding
+configurations.all {
+    resolutionStrategy.force 'org.antlr:antlr4-runtime:4.9.2'
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.3.0'
+
+    api 'com.android.tools:sdklib:31.5.0'
+    api 'com.android.tools.build:builder:8.5.0' 
+    api 'com.android.tools.build:builder-model:8.5.0'
+    api 'com.android.tools:sdk-common:31.5.0'
+    api 'com.android.tools:common:31.5.0'
+
+    implementation project(path: ':common-jvm')
+    api project(path: ':build-tools:builder-api') 
+    
+    implementation project(path: ':build-tools:eclipse-standalone')
+    implementation 'androidx.test:core:1.4.0'
+
+    api project(path: ':build-tools:jaxp:jaxp-internal')
+    api project(path: ':build-tools:jaxp:xml')
+
+    implementation project(path: ':build-tools:logging')
+    implementation project(path: ':build-tools:manifmerger')
+    implementation project(path: ':build-tools:project')
+    implementation project(path: ':build-tools:viewbinding-lib')
+
+    implementation project(path: ':build-tools:javac')
+    implementation project(path: ':build-tools:xml-repository')
+    implementation 'org.eclipse.lemminx:org.eclipse.lemminx:0.27.0'
+    
+    implementation 'com.android.tools.build:bundletool:1.15.2'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'net.lingala.zip4j:zip4j:2.11.2' 
+    
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "com.google.truth:truth:1.1.3"
+    testImplementation "org.robolectric:robolectric:4.7.3"
+
+    compileOnly project(path: ':android-stubs')
+    implementation "org.jetbrains.kotlin:kotlin-compiler-embeddable:$rootProject.ext.kotlin_version"
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ['src/main/java'] }
+        kotlin { srcDirs = ['src/main/java', 'src/main/kotlin'] }
+    }
+}

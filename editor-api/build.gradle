@@ -1,0 +1,21 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':language-api')
+    implementation project(':build-tools:logging')
+    implementation project(':build-tools:project')
+
+    implementation 'it.unimi.dsi:fastutil:8.5.8'
+    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'com.google.guava:guava:32.1.3-jre'
+    implementation 'org.checkerframework:checker-qual:3.37.0'
+
+    testImplementation 'junit:junit:4.+'
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

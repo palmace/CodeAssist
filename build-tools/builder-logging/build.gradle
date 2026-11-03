@@ -1,0 +1,57 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-annotations')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-api')
+    implementation project(':build-tools:builder-model-core')
+    
+    implementation project(':build-tools:builder-build-operations')
+    implementation project(':build-tools:builder-enterprise-workers')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:builder-messaging')
+    
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.fusesource.jansi:jansi:2.4.0'
+    implementation 'org.apache.ant:ant:1.10.12'
+
+    // Anotaciones necesarias para resolver symbols
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+            // Exclusión agresiva de infraestructura duplicada
+            exclude 'org/gradle/api/logging/**'
+            exclude 'org/gradle/cli/**'
+            exclude 'org/gradle/internal/buildoption/**'
+            exclude 'org/gradle/internal/deprecation/**'
+            
+            // Paquete org.gradle.internal.logging (dejar solo lo que NO esté en core-api)
+            exclude 'org/gradle/internal/logging/DefaultLoggingConfiguration.java'
+            exclude 'org/gradle/internal/logging/LogLevelMapping.java'
+            exclude 'org/gradle/internal/logging/StandardOutputCapture.java'
+            exclude 'org/gradle/internal/logging/text/DiagnosticsVisitor.java'
+            exclude 'org/gradle/internal/logging/text/StyledTextOutput.java'
+            exclude 'org/gradle/internal/logging/text/TreeFormatter.java'
+
+            // Excluir clases de featurelifecycle que ahora están en core-api
+            exclude 'org/gradle/internal/featurelifecycle/FeatureUsage.java'
+            exclude 'org/gradle/internal/featurelifecycle/FeatureHandler.java'
+        }
+    }
+}

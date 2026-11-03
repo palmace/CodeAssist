@@ -1,0 +1,36 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    // Cambiado de :common a :common-jvm para evitar ambigüedad en módulos Java
+    implementation project(':common-jvm')
+    implementation project(':build-tools:builder-base-annotations')
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:file-watching')
+
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // Anotaciones necesarias para resolver symbols
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+}

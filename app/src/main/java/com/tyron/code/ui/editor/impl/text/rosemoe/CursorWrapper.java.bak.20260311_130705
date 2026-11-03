@@ -1,0 +1,25 @@
+package com.tyron.code.ui.editor.impl.text.rosemoe;
+
+import com.tyron.editor.Caret;
+import io.github.rosemoe.sora.text.Cursor;
+public class CursorWrapper implements Caret {
+    private final Cursor mCursor;
+    public CursorWrapper(Cursor cursor) {
+        mCursor = cursor;
+    }
+    @Override
+    public int getStart() {
+        return mCursor.getLeft();
+    public int getEnd() {
+        return mCursor.getRight();
+    public int getStartLine() {
+        return mCursor.getLeftLine();
+    public int getStartColumn() {
+        return mCursor.getLeftColumn();
+    public int getEndLine() {
+        return mCursor.getRightLine();
+    public int getEndColumn() {
+        return mCursor.getRightColumn();
+    public boolean isSelected() {
+        return mCursor.isSelected();
+}

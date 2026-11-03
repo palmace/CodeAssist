@@ -1,0 +1,42 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-base-services-groovy')
+    implementation project(':build-tools:builder-messaging')
+    implementation project(':build-tools:builder-native')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:builder-process-services')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:builder-file-temp')
+    implementation project(':build-tools:builder-jvm-services')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-dependency-management')
+    implementation project(':build-tools:builder-reporting')
+    implementation project(':build-tools:builder-diagnostics')
+    implementation project(':build-tools:builder-platform-base')
+    implementation project(':build-tools:builder-platform-jvm')
+    implementation project(':build-tools:builder-java')
+    implementation project(':build-tools:builder-testing-base')
+
+    implementation project(':common-jvm')
+    implementation 'javax.inject:javax.inject:1'
+    implementation('org.codehaus.groovy:groovy-xml:3.0.19') {
+        transitive = false
+    }
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.ow2.asm:asm:9.3'
+
+    implementation("junit:junit:4.13.2")
+    compileOnly 'org.testng:testng:7.4.0'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+sourceSets { main { java { srcDirs = [] } } }

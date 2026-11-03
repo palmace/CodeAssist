@@ -1,0 +1,31 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':common-jvm')
+
+    implementation project(':build-tools:builder-base-services')
+    implementation project(':build-tools:builder-files')
+    implementation project(':build-tools:builder-logging')
+    implementation project(':build-tools:file-collections')
+    implementation project(':build-tools:builder-core-api')
+    implementation project(':build-tools:builder-model-core')
+    implementation project(':build-tools:builder-core')
+    implementation project(':build-tools:builder-workers')
+    implementation project(':build-tools:builder-platform-base')
+    implementation project(':build-tools:builder-process-services')
+
+    implementation 'javax.inject:javax.inject:1'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+sourceSets {
+    main {
+        java { srcDirs = [] }
+    }
+}
