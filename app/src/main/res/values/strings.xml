@@ -199,8 +199,8 @@
     <string name="action_menu_build_debug">Build debug APK</string>
     <string name="action_menu_build_aab">Build AAB</string>
 
-    <string name="project_manager_alpha_notice_title">Alpha notice</string>
-    <string name="project_manager_alpha_notice">CodeAssist is still in alpha,
+    <string name="project_manager_alpha_notice_title">Beta notice</string>
+    <string name="project_manager_alpha_notice">CodeAssist is still in beta,
         you may encounter crashes, bugs and incomplete features.\nYou
         can report these issues at https://github.com/tyron12233/CodeAssist/issues</string>
     <string name="project_manager_save_location_title">Select save location</string>

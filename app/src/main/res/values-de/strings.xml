@@ -152,8 +152,8 @@
     <string name="action_menu_build_debug">Debug-APK erstellen</string>
     <string name="action_menu_build_aab">AAB erstellen</string>
 
-    <string name="project_manager_alpha_notice_title">Alpha-Anmerkung</string>
-    <string name="project_manager_alpha_notice">CodeAssist ist noch in der Alpha-Phase,
+    <string name="project_manager_alpha_notice_title">Beta-Anmerkung</string>
+    <string name="project_manager_alpha_notice">CodeAssist ist noch in der beta-Phase,
         das heißt du könntest Abstürze, Fehler und unvollständige Features bemerken.\nDu
         kannst diese Probleme hier melden: https://github.com/tyron12233/CodeAssist/issues</string>
     <string name="project_manager_save_location_title">Wähle einen Speicherort</string>

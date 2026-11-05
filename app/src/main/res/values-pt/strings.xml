@@ -172,8 +172,8 @@
     <string name="action_menu_build_debug">Construir APK de depuração</string>
     <string name="action_menu_build_aab">Construir AAB</string>
 
-    <string name="project_manager_alpha_notice_title">Aviso Alfa</string>
-    <string name="project_manager_alpha_notice">O CodeAssist ainda está em alfa,
+    <string name="project_manager_alpha_notice_title">Aviso beta</string>
+    <string name="project_manager_alpha_notice">O CodeAssist ainda está em beta,
                 você pode encontrar falhas, bugs e características incompletas.\nVocê pode relatar estas questões em https://github.com/tyron12233/CodeAssist/issues</string>
     <string name="project_manager_save_location_title">Selecione o local de salvamento</string>
     <string name="project_manager_permission_denied">Permissão negada</string>
