@@ -175,7 +175,7 @@
 
     <string name="project_manager_alpha_notice_title">Beta 版本公告</string>
     <string name="project_manager_alpha_notice">CodeAssist仍处于alpha版本，
-        你可能会遇到崩溃、bug和不完整的功能，你可以反馈这些问题到这里 https://github.com/tyron12233/CodeAssist/issues</string>
+        你可能会遇到崩溃、bug和不完整的功能，你可以反馈这些问题到这里 https://github.com/palmace/CodeAssist/issues</string>
     <string name="project_manager_save_location_title">选择保存位置</string>
     <string name="project_manager_permission_denied">没有权限</string>
     <string name="project_manager_button_request_again">再次请求</string>

@@ -153,7 +153,7 @@
     <string name="project_manager_alpha_notice_title">Pemberitahuan beta</string>
     <string name="project_manager_alpha_notice">CodeAssist sedang dalam versi beta,
         Anda mungkin mengalami error, bug, dan fitur yang tidak lengkap.\nAnda
-        dapat melaporkan masalah-masalah tersebut di https://github.com/tyron12233/CodeAssist/issues</string>
+        dapat melaporkan masalah-masalah tersebut di https://github.com/palmace/CodeAssist/issues</string>
     <string name="project_manager_save_location_title">Pilih lokasi penyimpanan</string>
     <string name="project_manager_permission_denied">Izin ditolak</string>
     <string name="project_manager_button_request_again">Izin lagi</string>

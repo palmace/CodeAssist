@@ -174,7 +174,7 @@
     <string name="project_manager_alpha_notice_title">Aviso do desenvolvimento beta</string>
     <string name="project_manager_alpha_notice">CodeAssist ainda está em beta,
         você pode se deparar com travamentos, bugs e funções incompletas.\nVocê
-        pode reportar esses problemas em https://github.com/tyron12233/CodeAssist/issues</string>
+        pode reportar esses problemas em https://github.com/palmace/CodeAssist/issues</string>
     <string name="project_manager_save_location_title">Salvar o caminho de saída</string>
     <string name="project_manager_permission_denied">Permissão negada</string>
     <string name="project_manager_button_request_again">Requesitar novamente</string>

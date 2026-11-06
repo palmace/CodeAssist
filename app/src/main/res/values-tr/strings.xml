@@ -153,7 +153,7 @@
     <string name="project_manager_alpha_notice_title">Beta Notu</string>
     <string name="project_manager_alpha_notice">CodeAssit hala beta sürümde,
         hatalarla, bozulmalarla ve tamamlanmayan özelliklerle karşılaşabilirsiniz.\nBu
-        hataları https://github.com/tyron12233/CodeAssist/issues adresinden raporlayabilirsiniz.</string>
+        hataları https://github.com/palmace/CodeAssist/issues adresinden raporlayabilirsiniz.</string>
     <string name="project_manager_save_location_title">Kaydetme konumu seç</string>
     <string name="project_manager_permission_denied">İzin reddedildi</string>
     <string name="project_manager_button_request_again">Tekrar İste</string>
