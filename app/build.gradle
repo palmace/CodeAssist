@@ -76,7 +76,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation fileTree(dir: "libs", include: ["*.jar"], exclude: ["kotlin-compiler-embeddable.jar"])
     
     implementation project(":editor-api")
     implementation project(":language-api")
