@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
+    namespace "com.tyron.code"
     namespace 'com.tyron.code'
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -76,7 +77,36 @@ configurations.all {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"], exclude: ["core-common-2.2.0.jar", "collection-1.1.0.jar", "annotation-1.7.0.jar", "databinding-common-8.1.0.jar", "constraintlayout-core-1.0.4.jar", "room-common-2.3.0.jar", "room-common-2.5.2.jar", "kotlinx-coroutines-android-1.7.1.jar", "kotlinx-coroutines-core-jvm-1.7.1.jar"])
+    configurations {
+        all {
+            exclude group: "androidx.arch.core"
+            exclude group: "androidx.concurrent"
+            exclude group: "androidx.resourceinspection"
+            exclude group: "androidx.collection"
+            exclude group: "androidx.annotation"
+            exclude group: "androidx.databinding"
+            exclude group: "androidx.constraintlayout"
+            exclude group: "androidx.room"
+            exclude group: "androidx.lifecycle"
+            exclude group: "androidx.fragment"
+            exclude group: "androidx.core"
+            exclude group: "androidx.appcompat"
+            exclude group: "androidx.recyclerview"
+            exclude group: "androidx.viewpager"
+            exclude group: "androidx.swiperefreshlayout"
+            exclude group: "com.google.android.material"
+            exclude group: "org.jetbrains.kotlinx"
+            exclude group: "com.google.guava"
+            exclude group: "com.google.code.gson"
+            exclude group: "org.slf4j"
+            exclude group: "org.codehaus.groovy"
+            exclude group: "org.apache.commons"
+            exclude group: "com.android.tools"
+            exclude group: "com.android.tools.build"
+            exclude group: "com.android.tools.build.jetifier"
+        }
+    }
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     
 //     implementation project(":editor-api")
 //     implementation project(":language-api")
