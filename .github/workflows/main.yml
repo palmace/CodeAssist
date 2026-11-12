@@ -23,7 +23,7 @@ jobs:
       - name: Compilar
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --stacktrace --info
 
       - name: Subir APK
         uses: actions/upload-artifact@v4
