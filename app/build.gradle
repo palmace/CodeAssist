@@ -106,7 +106,7 @@ dependencies {
             exclude group: "com.android.tools.build.jetifier"
         }
     }
-    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     
 //     implementation project(":editor-api")
 //     implementation project(":language-api")
