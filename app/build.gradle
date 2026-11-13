@@ -85,7 +85,6 @@ dependencies {
             exclude group: "androidx.collection"
             exclude group: "androidx.annotation"
             exclude group: "androidx.databinding"
-            exclude group: "androidx.constraintlayout"
             exclude group: "androidx.room"
             exclude group: "androidx.lifecycle"
             exclude group: "androidx.fragment"
