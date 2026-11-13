@@ -15,7 +15,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel;
 import io.github.rosemoe.sora.text.ContentReference;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.internal.theme.Theme;
-import org.eclipse.tm4e.languageconfiguration.internal.model.LanguageConfiguration;
+import org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration;
 
 /**
  * A text mate analyzer which does not use a TextMateLanguage

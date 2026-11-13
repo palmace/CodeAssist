@@ -24,7 +24,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry;
 import org.eclipse.tm4e.core.registry.IGrammarSource;
 import io.github.rosemoe.sora.langs.textmate.registry.model.DefaultGrammarDefinition;
 import org.eclipse.tm4e.core.grammar.IGrammar;
-import org.eclipse.tm4e.languageconfiguration.internal.model.LanguageConfiguration;
+import org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration;
 
 public class LanguageManager {
 
